@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>SnapShare</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Inter, Arial, sans-serif;
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at top left, #243b53, transparent 35%),
+        radial-gradient(circle at bottom right, #1d4ed8, transparent 30%),
+        #070b14;
+    color: #fff;
+}
+
+.container {
+    width: 100%;
+    max-width: 650px;
+    margin: auto;
+    padding: 25px 16px 50px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.logo {
+    width: 60px;
+    height: 60px;
+    margin: auto;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    box-shadow: 0 10px 30px rgba(37,99,235,.35);
+}
+
+.header h1 {
+    margin-top: 15px;
+    font-size: 30px;
+}
+
+.header p {
+    margin-top: 7px;
+    color: #9ca3af;
+}
+
+.card {
+    background: rgba(17,24,39,.82);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 22px;
+    padding: 22px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.35);
+    backdrop-filter: blur(15px);
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    color: #d1d5db;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 14px 15px;
+    border-radius: 12px;
+    border: 1px solid #374151;
+    outline: none;
+    background: #111827;
+    color: #fff;
+    font-size: 15px;
+}
+
+input[type="text"]:focus {
+    border-color: #3b82f6;
+}
+
+.upload {
+    margin-top: 18px;
+    border: 2px dashed #374151;
+    border-radius: 16px;
+    padding: 28px 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.upload:hover {
+    border-color: #3b82f6;
+    background: rgba(59,130,246,.05);
+}
+
+.upload-icon {
+    font-size: 35px;
+    margin-bottom: 8px;
+}
+
+.upload span {
+    color: #9ca3af;
+    font-size: 13px;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.preview {
+    display: none;
+    margin-top: 18px;
+    overflow: hidden;
+    border-radius: 15px;
+    background: #000;
+}
+
+.preview img {
+    display: block;
+    width: 100%;
+    max-height: 400px;
+    object-fit: contain;
+}
+
+.file-name {
+    padding: 10px;
+    font-size: 13px;
+    color: #9ca3af;
+    text-align: center;
+}
+
+button {
+    width: 100%;
+    border: 0;
+    border-radius: 12px;
+    padding: 14px;
+    margin-top: 18px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    color: #fff;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    transition: transform .15s, opacity .15s;
+}
+
+button:hover {
+    transform: translateY(-1px);
+}
+
+button:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+.secondary {
+    background: #1f2937;
+}
+
+.result {
+    display: none;
+    margin-top: 20px;
+    padding: 16px;
+    border-radius: 15px;
+    background: rgba(34,197,94,.08);
+    border: 1px solid rgba(34,197,94,.2);
+}
+
+.result-title {
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.link {
+    background: #0b1220;
+    border: 1px solid #263244;
+    padding: 12px;
+    border-radius: 10px;
+    word-break: break-all;
+    color: #93c5fd;
+    font-size: 13px;
+}
+
+.location-section {
+    display: none;
+    margin-top: 25px;
+}
+
+.location-status {
+    padding: 15px;
+    border-radius: 13px;
+    background: #111827;
+    color: #d1d5db;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.location-data {
+    display: none;
+    margin-top: 15px;
+}
+
+.location-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 11px 0;
+    border-bottom: 1px solid #263244;
+    font-size: 14px;
+}
+
+.location-row span:first-child {
+    color: #9ca3af;
+}
+
+.location-row span:last-child {
+    text-align: right;
+    word-break: break-word;
+}
+
+.footer {
+    text-align: center;
+    color: #6b7280;
+    font-size: 12px;
+    margin-top: 20px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+@media(max-width:500px) {
+
+    .container {
+        padding: 18px 12px 35px;
+    }
+
+    .card {
+        padding: 17px;
+        border-radius: 18px;
+    }
+
+    .header h1 {
+        font-size: 25px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <div class="logo">📸</div>
+
+        <h1>SnapShare</h1>
+
+        <p>Create a shareable image page</p>
+    </div>
+
+
+    <div class="card">
+
+        <label for="title">
+            Image Title
+        </label>
+
+        <input
+            type="text"
+            id="title"
+            placeholder="Example: Birthday Photo"
+            maxlength="100"
+        >
+
+
+        <label style="margin-top:20px;">
+            Select Image
+        </label>
+
+        <label class="upload" for="imageInput">
+
+            <div class="upload-icon">
+                🖼️
+            </div>
+
+            <strong>
+                Click to upload image
+            </strong>
+
+            <br>
+
+            <span>
+                JPG, PNG, WEBP supported
+            </span>
+
+        </label>
+
+        <input
+            type="file"
+            id="imageInput"
+            accept="image/*"
+        >
+
+
+        <div class="preview" id="previewBox">
+
+            <img id="previewImage" alt="Preview">
+
+            <div
+                class="file-name"
+                id="fileName"
+            ></div>
+
+        </div>
+
+
+        <button
+            id="generateBtn"
+            onclick="generateShareLink()"
+        >
+            🔗 Generate Share Link
+        </button>
+
+
+        <div
+            class="result"
+            id="resultBox"
+        >
+
+            <div class="result-title">
+                ✅ Share Link Created
+            </div>
+
+            <div
+                class="link"
+                id="shareLink"
+            ></div>
+
+            <button
+                class="secondary"
+                onclick="copyLink()"
+            >
+                📋 Copy Link
+            </button>
+
+            <button
+                class="secondary"
+                onclick="openLink()"
+            >
+                🔎 Open Link
+            </button>
+
+        </div>
+
+
+        <!--
+            VIEW MODE
+            The same index.html can act as the shared page.
+
+            Example:
+            index.html?id=xxxxx
+        -->
+
+        <div
+            class="location-section"
+            id="locationSection"
+        >
+
+            <div class="location-status" id="locationStatus">
+                📍 Location access is optional.
+                If you choose to share your location,
+                your browser will ask for permission.
+            </div>
+
+            <button
+                onclick="requestLocation()"
+            >
+                📍 Share My Location
+            </button>
+
+
+            <div
+                class="location-data"
+                id="locationData"
+            >
+
+                <div class="location-row">
+                    <span>Latitude</span>
+                    <span id="latitude">-</span>
+                </div>
+
+                <div class="location-row">
+                    <span>Longitude</span>
+                    <span id="longitude">-</span>
+                </div>
+
+                <div class="location-row">
+                    <span>Accuracy</span>
+                    <span id="accuracy">-</span>
+                </div>
+
+                <div class="location-row">
+                    <span>Address</span>
+                    <span id="address">-</span>
+                </div>
+
+                <div class="location-row">
+                    <span>City</span>
+                    <span id="city">-</span>
+                </div>
+
+                <div class="location-row">
+                    <span>Pincode</span>
+                    <span id="pincode">-</span>
+                </div>
+
+                <div class="location-row">
+                    <span>State</span>
+                    <span id="state">-</span>
+                </div>
+
+                <div class="location-row">
+                    <span>Country</span>
+                    <span id="country">-</span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="footer">
+        Location is requested only after user permission.
+    </div>
+
+</div>
+
+
+<script>
+
+const imageInput =
+    document.getElementById("imageInput");
+
+const previewBox =
+    document.getElementById("previewBox");
+
+const previewImage =
+    document.getElementById("previewImage");
+
+const fileName =
+    document.getElementById("fileName");
+
+const titleInput =
+    document.getElementById("title");
+
+const resultBox =
+    document.getElementById("resultBox");
+
+const shareLink =
+    document.getElementById("shareLink");
+
+let selectedImage = null;
+let currentShareUrl = "";
+
+
+/* =========================
+   IMAGE PREVIEW
+========================= */
+
+imageInput.addEventListener("change", function () {
+
+    const file = this.files[0];
+
+    if (!file) {
+        return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+
+        alert("Please select a valid image.");
+
+        this.value = "";
+
+        return;
+    }
+
+    selectedImage = file;
+
+    const reader = new FileReader();
+
+    reader.onload = function (event) {
+
+        previewImage.src =
+            event.target.result;
+
+        fileName.textContent =
+            file.name;
+
+        previewBox.style.display =
+            "block";
+    };
+
+    reader.readAsDataURL(file);
+});
+
+
+/* =========================
+   GENERATE LINK
+========================= */
+
+function generateShareLink() {
+
+    if (!selectedImage) {
+
+        alert("Please select an image first.");
+
+        return;
+    }
+
+
+    const title =
+        titleInput.value.trim();
+
+
+    if (!title) {
+
+        alert("Please enter an image title.");
+
+        titleInput.focus();
+
+        return;
+    }
+
+
+    /*
+        Generate unique ID.
+    */
+
+    const id =
+        crypto.randomUUID();
+
+
+    /*
+        Demo data.
+
+        NOTE:
+        localStorage belongs to THIS browser.
+        It does not make the image available
+        to another person's device.
+
+        A backend/storage service is required
+        for real sharing.
+    */
+
+    const reader =
+        new FileReader();
+
+
+    reader.onload = function (event) {
+
+        const imageData =
+            event.target.result;
+
+
+        const data = {
+
+            id: id,
+
+            title: title,
+
+            image: imageData,
+
+            createdAt:
+                new Date().toISOString()
+        };
+
+
+        localStorage.setItem(
+            "image_" + id,
+            JSON.stringify(data)
+        );
+
+
+        currentShareUrl =
+            window.location.origin +
+            window.location.pathname +
+            "?id=" +
+            id;
+
+
+        shareLink.textContent =
+            currentShareUrl;
+
+
+        resultBox.style.display =
+            "block";
+    };
+
+
+    reader.readAsDataURL(selectedImage);
+}
+
+
+/* =========================
+   COPY LINK
+========================= */
+
+function copyLink() {
+
+    if (!currentShareUrl) {
+        return;
+    }
+
+
+    navigator.clipboard.writeText(
+        currentShareUrl
+    );
+
+
+    alert("Share link copied!");
+}
+
+
+/* =========================
+   OPEN LINK
+========================= */
+
+function openLink() {
+
+    if (!currentShareUrl) {
+        return;
+    }
+
+
+    window.open(
+        currentShareUrl,
+        "_blank"
+    );
+}
+
+
+/* =========================
+   LOAD SHARED PAGE
+========================= */
+
+function loadSharedImage() {
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+
+    const id =
+        params.get("id");
+
+
+    if (!id) {
+        return;
+    }
+
+
+    const raw =
+        localStorage.getItem(
+            "image_" + id
+        );
+
+
+    /*
+        If data doesn't exist on this
+        browser, this demo cannot load it.
+
+        Real implementation requires
+        server-side storage.
+    */
+
+    if (!raw) {
+
+        document.querySelector(".header h1")
+            .textContent =
+            "Shared Image";
+
+        document.querySelector(".header p")
+            .textContent =
+            "This shared image is not available in this demo.";
+
+        return;
+    }
+
+
+    const data =
+        JSON.parse(raw);
+
+
+    titleInput.value =
+        data.title;
+
+
+    previewImage.src =
+        data.image;
+
+
+    fileName.textContent =
+        data.title;
+
+
+    previewBox.style.display =
+        "block";
+
+
+    /*
+        Hide upload controls in view mode.
+    */
+
+    document.querySelector(
+        ".upload"
+    ).style.display =
+        "none";
+
+
+    imageInput.style.display =
+        "none";
+
+
+    titleInput.style.display =
+        "none";
+
+
+    document.querySelector(
+        "label[for='imageInput']"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "generateBtn"
+    ).style.display =
+        "none";
+
+
+    /*
+        Show location section.
+    */
+
+    document.getElementById(
+        "locationSection"
+    ).style.display =
+        "block";
+
+
+    /*
+        Update page title.
+    */
+
+    document.title =
+        data.title;
+}
+
+
+/* =========================
+   REQUEST LOCATION
+========================= */
+
+function requestLocation() {
+
+    const status =
+        document.getElementById(
+            "locationStatus"
+        );
+
+
+    if (!navigator.geolocation) {
+
+        status.textContent =
+            "❌ Geolocation is not supported by this browser.";
+
+        return;
+    }
+
+
+    status.textContent =
+        "📍 Requesting location permission...";
+
+
+    navigator.geolocation.getCurrentPosition(
+
+        async function(position) {
+
+            const latitude =
+                position.coords.latitude;
+
+            const longitude =
+                position.coords.longitude;
+
+            const accuracy =
+                position.coords.accuracy;
+
+
+            document.getElementById(
+                "latitude"
+            ).textContent =
+                latitude;
+
+
+            document.getElementById(
+                "longitude"
+            ).textContent =
+                longitude;
+
+
+            document.getElementById(
+                "accuracy"
+            ).textContent =
+                Math.round(accuracy) +
+                " meters";
+
+
+            status.textContent =
+                "✅ Location permission granted.";
+
+
+            document.getElementById(
+                "locationData"
+            ).style.display =
+                "block";
+
+
+            /*
+                Reverse geocoding.
+
+                This converts coordinates into
+                address/city/pincode.
+
+                Production apps should preferably
+                use a backend/proper geocoding
+                provider and respect its terms.
+            */
+
+            try {
+
+                const response =
+                    await fetch(
+                        "https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=" +
+                        encodeURIComponent(latitude) +
+                        "&lon=" +
+                        encodeURIComponent(longitude)
+                    );
+
+
+                if (!response.ok) {
+                    throw new Error(
+                        "Reverse geocoding failed"
+                    );
+                }
+
+
+                const data =
+                    await response.json();
+
+
+                const address =
+                    data.address || {};
+
+
+                document.getElementById(
+                    "address"
+                ).textContent =
+                    data.display_name || "-";
+
+
+                document.getElementById(
+                    "city"
+                ).textContent =
+                    address.city ||
+                    address.town ||
+                    address.village ||
+                    address.municipality ||
+                    "-";
+
+
+                document.getElementById(
+                    "pincode"
+                ).textContent =
+                    address.postcode || "-";
+
+
+                document.getElementById(
+                    "state"
+                ).textContent =
+                    address.state || "-";
+
+
+                document.getElementById(
+                    "country"
+                ).textContent =
+                    address.country || "-";
+
+
+                /*
+                    IMPORTANT:
+
+                    At this point the browser has
+                    the user's permitted location.
+
+                    To send it to YOUR dashboard,
+                    POST these values to your backend.
+
+                    Example:
+
+                    fetch("/api/location", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+                        body: JSON.stringify({
+                            latitude,
+                            longitude,
+                            accuracy,
+                            address:
+                                data.display_name,
+                            city:
+                                address.city,
+                            pincode:
+                                address.postcode,
+                            state:
+                                address.state,
+                            country:
+                                address.country
+                        })
+                    });
+                */
+
+            }
+
+            catch (error) {
+
+                document.getElementById(
+                    "address"
+                ).textContent =
+                    "Unable to fetch address";
+
+                console.error(error);
+            }
+
+        },
+
+
+        function(error) {
+
+            if (error.code === 1) {
+
+                status.textContent =
+                    "❌ Location permission was denied.";
+
+            }
+
+            else if (error.code === 2) {
+
+                status.textContent =
+                    "❌ Location is unavailable.";
+
+            }
+
+            else if (error.code === 3) {
+
+                status.textContent =
+                    "❌ Location request timed out.";
+
+            }
+
+            else {
+
+                status.textContent =
+                    "❌ Unable to get location.";
+
+            }
+
+        },
+
+
+        {
+            enableHighAccuracy: true,
+            timeout: 20000,
+            maximumAge: 0
+        }
+    );
+}
+
+
+/* =========================
+   START
+========================= */
+
+loadSharedImage();
+
+</script>
+
+</body>
+</html>
