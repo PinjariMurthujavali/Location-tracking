@@ -2,272 +2,498 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
-<title>GeoShare</title>
+<title>GeoShare — Smart Image Sharing</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-
-* {
-    box-sizing: border-box;
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
 
-body {
-    margin: 0;
-    font-family:
-        Inter,
-        Arial,
-        sans-serif;
+:root{
+    --bg:#070b17;
+    --card:#10172a;
+    --card2:#151d33;
+    --text:#f8fafc;
+    --muted:#94a3b8;
+    --primary:#6366f1;
+    --primary2:#8b5cf6;
+    --green:#22c55e;
+    --red:#ef4444;
+    --border:rgba(255,255,255,.09);
+}
 
+body{
+    min-height:100vh;
+    font-family:Inter,Arial,sans-serif;
     background:
-        linear-gradient(
-            135deg,
-            #eef2ff,
-            #f8fafc
-        );
-
-    color: #111827;
-    min-height: 100vh;
+        radial-gradient(circle at 10% 10%,rgba(99,102,241,.20),transparent 30%),
+        radial-gradient(circle at 90% 20%,rgba(139,92,246,.18),transparent 30%),
+        linear-gradient(135deg,#050816,#0b1020 50%,#080b15);
+    color:var(--text);
 }
 
-.container {
-    width: min(1100px, 94%);
-    margin: 40px auto;
+.container{
+    width:min(1180px,94%);
+    margin:auto;
+    padding:28px 0 60px;
 }
 
-.header {
-    background: #111827;
-    color: white;
-    border-radius: 22px;
-    padding: 28px;
-    margin-bottom: 22px;
+/* HEADER */
 
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 20px;
+.header{
+    padding:28px;
+    border:1px solid var(--border);
+    border-radius:28px;
+    background:rgba(16,23,42,.78);
+    backdrop-filter:blur(18px);
+    box-shadow:0 25px 70px rgba(0,0,0,.35);
+    margin-bottom:24px;
 }
 
-.header h1 {
-    margin: 0;
-    font-size: 28px;
+.brand{
+    display:flex;
+    align-items:center;
+    gap:15px;
 }
 
-.header p {
-    margin: 7px 0 0;
-    color: #cbd5e1;
+.logo{
+    width:55px;
+    height:55px;
+    border-radius:17px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:28px;
+    background:linear-gradient(135deg,var(--primary),var(--primary2));
+    box-shadow:0 10px 30px rgba(99,102,241,.35);
 }
 
-.card {
-    background: white;
-    border-radius: 20px;
-    padding: 24px;
-    margin-bottom: 22px;
-
-    box-shadow:
-        0 10px 35px rgba(15, 23, 42, 0.08);
+.header h1{
+    font-size:29px;
 }
 
-.card h2 {
-    margin-top: 0;
+.header p{
+    margin-top:5px;
+    color:var(--muted);
 }
 
-label {
-    display: block;
-    font-weight: 700;
-    margin: 17px 0 8px;
+/* CARDS */
+
+.card{
+    background:rgba(16,23,42,.86);
+    border:1px solid var(--border);
+    border-radius:24px;
+    padding:25px;
+    margin-bottom:24px;
+    box-shadow:0 20px 55px rgba(0,0,0,.25);
+    backdrop-filter:blur(15px);
 }
 
-input[type="text"],
-input[type="file"] {
-    width: 100%;
-    padding: 13px;
-    border: 1px solid #d1d5db;
-    border-radius: 12px;
-    font-size: 15px;
-    background: white;
+.card-title{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    margin-bottom:22px;
 }
 
-input:focus {
-    outline: 2px solid #6366f1;
-    border-color: transparent;
+.card-title h2{
+    font-size:20px;
 }
 
-button {
-    border: none;
-    border-radius: 12px;
-    padding: 13px 18px;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: .2s;
+.subtitle{
+    color:var(--muted);
+    font-size:13px;
+    margin-top:5px;
 }
 
-button:hover {
-    transform: translateY(-1px);
+/* FORM */
+
+label{
+    display:block;
+    font-weight:700;
+    margin:17px 0 8px;
 }
 
-.primary {
-    width: 100%;
-    margin-top: 20px;
-    background: #4f46e5;
-    color: white;
+input[type="text"]{
+    width:100%;
+    padding:14px 15px;
+    border-radius:13px;
+    border:1px solid var(--border);
+    background:#080d1c;
+    color:white;
+    outline:none;
+    font-size:15px;
 }
 
-.secondary {
-    background: #e0e7ff;
-    color: #3730a3;
+input[type="text"]:focus{
+    border-color:var(--primary);
+    box-shadow:0 0 0 3px rgba(99,102,241,.12);
 }
 
-.success {
-    background: #dcfce7;
-    color: #166534;
+.file-box{
+    border:2px dashed rgba(99,102,241,.35);
+    border-radius:18px;
+    padding:25px;
+    text-align:center;
+    cursor:pointer;
+    background:rgba(99,102,241,.05);
+    transition:.25s;
 }
 
-.danger {
-    background: #fee2e2;
-    color: #991b1b;
+.file-box:hover{
+    border-color:var(--primary);
+    background:rgba(99,102,241,.09);
 }
 
-.preview {
-    display: none;
-    width: 100%;
-    max-height: 400px;
-    object-fit: contain;
-    margin-top: 18px;
-    border-radius: 15px;
-    background: #f1f5f9;
+.file-box input{
+    width:100%;
 }
 
-.share-result {
-    display: none;
-    margin-top: 20px;
-    padding: 18px;
-    background: #eef2ff;
-    border-radius: 14px;
+.file-icon{
+    font-size:40px;
+    margin-bottom:8px;
 }
 
-.link {
-    margin-top: 10px;
-    padding: 12px;
-    background: white;
-    border-radius: 10px;
-    word-break: break-all;
-    border: 1px solid #c7d2fe;
+.file-text{
+    color:var(--muted);
+    font-size:14px;
 }
 
-.viewer {
-    display: none;
-    text-align: center;
+.preview{
+    width:100%;
+    max-height:420px;
+    object-fit:contain;
+    display:none;
+    margin-top:20px;
+    border-radius:18px;
+    background:#050816;
+    border:1px solid var(--border);
 }
 
-.viewer img {
-    max-width: 100%;
-    max-height: 65vh;
-    border-radius: 18px;
-    object-fit: contain;
+/* BUTTONS */
+
+button{
+    border:none;
+    cursor:pointer;
+    font-weight:800;
+    border-radius:13px;
+    transition:.2s;
 }
 
-.viewer-title {
-    margin-bottom: 20px;
+button:hover{
+    transform:translateY(-1px);
 }
 
-.permission-box {
-    margin-top: 22px;
-    padding: 20px;
-    border-radius: 16px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
+button:disabled{
+    opacity:.55;
+    cursor:not-allowed;
+    transform:none;
 }
 
-.permission-box h3 {
-    margin-top: 0;
+.primary{
+    width:100%;
+    margin-top:20px;
+    padding:15px;
+    color:white;
+    font-size:15px;
+    background:linear-gradient(135deg,var(--primary),var(--primary2));
+    box-shadow:0 12px 30px rgba(99,102,241,.25);
 }
 
-.status {
-    margin-top: 12px;
-    font-weight: 600;
+.secondary{
+    padding:11px 16px;
+    color:white;
+    background:#1e293b;
+    border:1px solid var(--border);
 }
 
-.table-wrap {
-    overflow-x: auto;
+.success{
+    background:rgba(34,197,94,.13);
+    color:#86efac;
+    border:1px solid rgba(34,197,94,.25);
 }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 900px;
+.danger{
+    background:rgba(239,68,68,.12);
+    color:#fca5a5;
 }
 
-th,
-td {
-    padding: 13px;
-    border-bottom: 1px solid #e5e7eb;
-    text-align: left;
-    vertical-align: top;
+/* SHARE RESULT */
+
+.share-result{
+    display:none;
+    margin-top:20px;
+    padding:20px;
+    border-radius:18px;
+    background:linear-gradient(
+        135deg,
+        rgba(99,102,241,.12),
+        rgba(139,92,246,.08)
+    );
+    border:1px solid rgba(99,102,241,.25);
 }
 
-th {
-    background: #f8fafc;
-    font-size: 13px;
+.success-title{
+    color:#a5b4fc;
+    font-weight:800;
 }
 
-td {
-    font-size: 13px;
+.link-box{
+    margin-top:13px;
+    padding:13px;
+    border-radius:12px;
+    background:#070b17;
+    border:1px solid var(--border);
+    word-break:break-all;
+    color:#c7d2fe;
+    font-size:13px;
 }
 
-.badge {
-    display: inline-block;
-    padding: 5px 9px;
-    border-radius: 999px;
-    background: #dcfce7;
-    color: #166534;
-    font-size: 12px;
-    font-weight: 700;
+.actions{
+    display:flex;
+    gap:10px;
+    margin-top:12px;
 }
 
-.empty {
-    text-align: center;
-    padding: 30px;
-    color: #64748b;
+.actions button{
+    flex:1;
 }
 
-.hidden {
-    display: none !important;
+/* STATS */
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+    margin-bottom:24px;
 }
 
-.loading {
-    opacity: .6;
-    pointer-events: none;
+.stat{
+    padding:20px;
+    border-radius:18px;
+    background:rgba(16,23,42,.86);
+    border:1px solid var(--border);
 }
 
-@media (max-width: 650px) {
+.stat-icon{
+    font-size:25px;
+}
 
-    .container {
-        margin: 20px auto;
+.stat-number{
+    font-size:28px;
+    font-weight:900;
+    margin-top:8px;
+}
+
+.stat-label{
+    color:var(--muted);
+    font-size:13px;
+}
+
+/* TABLE */
+
+.table-wrap{
+    overflow:auto;
+    border:1px solid var(--border);
+    border-radius:15px;
+}
+
+table{
+    width:100%;
+    min-width:1150px;
+    border-collapse:collapse;
+}
+
+th,td{
+    padding:14px;
+    text-align:left;
+    border-bottom:1px solid var(--border);
+}
+
+th{
+    background:#0b1120;
+    color:#cbd5e1;
+    font-size:12px;
+    text-transform:uppercase;
+}
+
+td{
+    font-size:13px;
+    color:#e2e8f0;
+}
+
+tr:hover td{
+    background:rgba(255,255,255,.02);
+}
+
+.empty{
+    text-align:center;
+    padding:35px;
+    color:var(--muted);
+}
+
+/* VIEWER */
+
+.viewer{
+    display:none;
+}
+
+.viewer-card{
+    text-align:center;
+}
+
+.viewer-title{
+    font-size:27px;
+    margin-bottom:20px;
+}
+
+.viewer-image{
+    width:100%;
+    max-height:68vh;
+    object-fit:contain;
+    border-radius:20px;
+    background:#050816;
+    border:1px solid var(--border);
+}
+
+.permission{
+    margin-top:22px;
+    padding:23px;
+    border-radius:19px;
+    background:rgba(99,102,241,.07);
+    border:1px solid rgba(99,102,241,.2);
+}
+
+.permission h3{
+    margin-bottom:8px;
+}
+
+.permission p{
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.6;
+}
+
+.location-btn{
+    max-width:360px;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+.status{
+    margin-top:15px;
+    font-size:14px;
+    line-height:1.6;
+}
+
+.badge{
+    display:inline-block;
+    padding:8px 12px;
+    border-radius:999px;
+    background:rgba(34,197,94,.12);
+    color:#86efac;
+    border:1px solid rgba(34,197,94,.25);
+}
+
+/* LOCATION INFO */
+
+.location-preview{
+    display:none;
+    margin-top:20px;
+    text-align:left;
+    padding:18px;
+    border-radius:15px;
+    background:#080d1c;
+    border:1px solid var(--border);
+}
+
+.location-preview div{
+    padding:8px 0;
+    border-bottom:1px solid var(--border);
+}
+
+.location-preview div:last-child{
+    border-bottom:none;
+}
+
+.location-preview strong{
+    color:#a5b4fc;
+}
+
+/* ALERT */
+
+.alert{
+    display:none;
+    padding:14px 16px;
+    border-radius:13px;
+    margin-top:15px;
+    font-size:14px;
+    line-height:1.5;
+}
+
+.alert.error{
+    display:block;
+    background:rgba(239,68,68,.10);
+    color:#fca5a5;
+    border:1px solid rgba(239,68,68,.22);
+}
+
+.alert.info{
+    display:block;
+    background:rgba(59,130,246,.10);
+    color:#93c5fd;
+    border:1px solid rgba(59,130,246,.22);
+}
+
+/* HIDDEN */
+
+.hidden{
+    display:none!important;
+}
+
+/* MOBILE */
+
+@media(max-width:700px){
+
+    .container{
+        width:92%;
+        padding-top:15px;
     }
 
-    .header {
-        padding: 22px;
-        display: block;
+    .header{
+        padding:20px;
+        border-radius:20px;
     }
 
-    .header h1 {
-        font-size: 24px;
+    .header h1{
+        font-size:23px;
     }
 
-    .card {
-        padding: 18px;
+    .card{
+        padding:18px;
+        border-radius:19px;
+    }
+
+    .stats{
+        grid-template-columns:1fr;
+    }
+
+    .actions{
+        flex-direction:column;
+    }
+
+    .viewer-title{
+        font-size:22px;
     }
 
 }
-
 </style>
 </head>
 
@@ -275,25 +501,49 @@ td {
 
 <div class="container">
 
-    <div class="header">
+    <!-- HEADER -->
 
-        <div>
-            <h1>📍 GeoShare</h1>
-            <p>
-                Create a consent-based image sharing link
-            </p>
+    <header class="header">
+
+        <div class="brand">
+
+            <div class="logo">
+                📍
+            </div>
+
+            <div>
+                <h1>GeoShare</h1>
+
+                <p>
+                    Smart image sharing with consent-based location
+                </p>
+            </div>
+
         </div>
 
-    </div>
+    </header>
 
 
-    <!-- ADMIN / CREATE SECTION -->
+    <!-- ADMIN -->
 
-    <div id="adminSection">
+    <main id="adminSection">
 
-        <div class="card">
+        <!-- CREATE CARD -->
 
-            <h2>🖼️ Create Image Link</h2>
+        <section class="card">
+
+            <div class="card-title">
+
+                <div>
+                    <h2>✨ Create Share Link</h2>
+
+                    <div class="subtitle">
+                        Upload an image and create a unique sharing link
+                    </div>
+                </div>
+
+            </div>
+
 
             <label for="title">
                 Image Title
@@ -302,26 +552,55 @@ td {
             <input
                 id="title"
                 type="text"
-                placeholder="Example: My Photo"
+                maxlength="120"
+                placeholder="Example: Event Photo"
             >
 
 
-            <label for="imageInput">
+            <label>
                 Select Image
             </label>
 
-            <input
-                id="imageInput"
-                type="file"
-                accept="image/*"
+            <div
+                class="file-box"
+                onclick="document.getElementById('imageInput').click()"
             >
+
+                <div class="file-icon">
+                    🖼️
+                </div>
+
+                <div>
+                    <strong>
+                        Choose an image
+                    </strong>
+                </div>
+
+                <div class="file-text">
+                    JPG, PNG, WEBP • Max 10MB
+                </div>
+
+                <input
+                    id="imageInput"
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    hidden
+                >
+
+            </div>
 
 
             <img
                 id="preview"
                 class="preview"
-                alt="Preview"
+                alt="Image Preview"
             >
+
+
+            <div
+                id="createError"
+                class="alert"
+            ></div>
 
 
             <button
@@ -333,48 +612,135 @@ td {
             </button>
 
 
+            <!-- RESULT -->
+
             <div
                 id="shareResult"
                 class="share-result"
             >
 
-                <strong>
-                    ✅ Share link generated
-                </strong>
+                <div class="success-title">
+                    ✅ Share link created successfully
+                </div>
 
                 <div
                     id="shareLink"
-                    class="link"
+                    class="link-box"
                 ></div>
 
 
-                <button
-                    class="secondary"
-                    onclick="copyShareLink()"
-                    style="margin-top:12px;"
+                <div class="actions">
+
+                    <button
+                        class="secondary"
+                        onclick="copyShareLink()"
+                    >
+                        📋 Copy Link
+                    </button>
+
+                    <button
+                        class="secondary"
+                        onclick="openShareLink()"
+                    >
+                        ↗️ Open
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- STATS -->
+
+        <div class="stats">
+
+            <div class="stat">
+
+                <div class="stat-icon">
+                    🔗
+                </div>
+
+                <div
+                    id="shareCount"
+                    class="stat-number"
                 >
-                    📋 Copy Link
-                </button>
+                    0
+                </div>
+
+                <div class="stat-label">
+                    Shared Links
+                </div>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div class="stat-icon">
+                    📍
+                </div>
+
+                <div
+                    id="visitorCount"
+                    class="stat-number"
+                >
+                    0
+                </div>
+
+                <div class="stat-label">
+                    Consented Visitors
+                </div>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div class="stat-icon">
+                    🌎
+                </div>
+
+                <div
+                    id="cityCount"
+                    class="stat-number"
+                >
+                    0
+                </div>
+
+                <div class="stat-label">
+                    Cities
+                </div>
 
             </div>
 
         </div>
 
 
-        <!-- LOCATION TABLE -->
+        <!-- TABLE -->
 
-        <div class="card">
+        <section class="card">
 
-            <h2>📊 Visitor Locations</h2>
+            <div class="card-title">
 
-            <button
-                class="secondary"
-                onclick="loadLocations()"
-            >
-                🔄 Refresh
-            </button>
+                <div>
+                    <h2>📊 Visitor Locations</h2>
 
-            <br><br>
+                    <div class="subtitle">
+                        Locations shared with explicit browser permission
+                    </div>
+                </div>
+
+                <button
+                    class="secondary"
+                    onclick="loadLocations()"
+                >
+                    🔄 Refresh
+                </button>
+
+            </div>
+
 
             <div class="table-wrap">
 
@@ -401,22 +767,31 @@ td {
 
                     <tbody id="locationTable">
 
+                        <tr>
+                            <td
+                                colspan="10"
+                                class="empty"
+                            >
+                                Loading locations...
+                            </td>
+                        </tr>
+
                     </tbody>
 
                 </table>
 
             </div>
 
-        </div>
+        </section>
 
-    </div>
+    </main>
 
 
-    <!-- VISITOR IMAGE PAGE -->
+    <!-- VISITOR -->
 
-    <div
+    <section
         id="viewerSection"
-        class="card viewer"
+        class="card viewer viewer-card"
     >
 
         <h1
@@ -429,24 +804,28 @@ td {
 
         <img
             id="viewerImage"
+            class="viewer-image"
             alt="Shared Image"
         >
 
 
-        <div class="permission-box">
+        <div class="permission">
 
             <h3>
-                📍 Location Permission
+                📍 Share Your Location
             </h3>
 
             <p>
-                To continue, you can choose to share
-                your current location with this page.
+                If you choose to share your location,
+                your browser will ask for permission.
+                Your location is saved only after you
+                explicitly allow access.
             </p>
+
 
             <button
                 id="locationBtn"
-                class="primary"
+                class="primary location-btn"
                 onclick="requestLocation()"
             >
                 📍 Allow Location
@@ -458,9 +837,15 @@ td {
                 class="status"
             ></div>
 
+
+            <div
+                id="locationPreview"
+                class="location-preview"
+            ></div>
+
         </div>
 
-    </div>
+    </section>
 
 </div>
 
@@ -472,50 +857,76 @@ td {
    ========================================================= */
 
 const SUPABASE_URL =
-    "sb_publishable__rcgeXfzaLjEK5eyds8qMA_QIqqApPU";
+    "https://hglehcluiqgbjvtwwbsh.supabase.co";
+
 
 const SUPABASE_ANON_KEY =
     "sb_publishable__rcgeXfzaLjEK5eyds8qMA_QIqqApPU";
 
 
-const supabaseClient =
-    window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_ANON_KEY
+/* =========================================================
+   SUPABASE CLIENT
+   ========================================================= */
+
+let supabaseClient = null;
+
+
+try {
+
+    if (
+        SUPABASE_URL &&
+        SUPABASE_ANON_KEY &&
+        SUPABASE_ANON_KEY !==
+        "PASTE_YOUR_PUBLISHABLE_KEY_HERE"
+    ) {
+
+        supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_ANON_KEY
+            );
+
+    }
+
+} catch(error) {
+
+    console.error(
+        "Supabase initialization error:",
+        error
     );
+
+}
 
 
 /* =========================================================
-   GLOBAL VARIABLES
+   GLOBALS
    ========================================================= */
 
 let selectedFile = null;
 
 let currentShareId = null;
 
-let currentShareTitle = null;
-
 
 /* =========================================================
-   CHECK URL
+   URL
    ========================================================= */
 
-const urlParams =
+const params =
     new URLSearchParams(
         window.location.search
     );
 
 const shareId =
-    urlParams.get("id");
+    params.get("id");
 
 
 /* =========================================================
-   PAGE INITIALIZATION
+   DOM READY
    ========================================================= */
 
 document.addEventListener(
     "DOMContentLoaded",
-    async function () {
+    async function(){
 
         if (shareId) {
 
@@ -533,7 +944,13 @@ document.addEventListener(
 
         } else {
 
-            await loadLocations();
+            document
+                .getElementById("adminSection")
+                .classList.remove("hidden");
+
+            checkSupabase();
+
+            await loadDashboard();
 
         }
 
@@ -542,14 +959,34 @@ document.addEventListener(
 
 
 /* =========================================================
-   IMAGE PREVIEW
+   SUPABASE CHECK
+   ========================================================= */
+
+function checkSupabase(){
+
+    if (!supabaseClient) {
+
+        showCreateError(
+            "Supabase is not connected. " +
+            "Open this file and replace " +
+            "PASTE_YOUR_PUBLISHABLE_KEY_HERE " +
+            "with your Supabase Publishable Key."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   FILE INPUT
    ========================================================= */
 
 document
     .getElementById("imageInput")
     .addEventListener(
         "change",
-        function () {
+        function(){
 
             const file =
                 this.files[0];
@@ -558,10 +995,11 @@ document
                 return;
             }
 
+
             if (!file.type.startsWith("image/")) {
 
-                alert(
-                    "Please select an image file."
+                showCreateError(
+                    "Please select a valid image."
                 );
 
                 this.value = "";
@@ -569,13 +1007,30 @@ document
                 return;
             }
 
+
+            if (file.size > 10 * 1024 * 1024) {
+
+                showCreateError(
+                    "Image must be smaller than 10MB."
+                );
+
+                this.value = "";
+
+                return;
+            }
+
+
             selectedFile = file;
+
+            hideCreateError();
+
 
             const reader =
                 new FileReader();
 
+
             reader.onload =
-                function (event) {
+                function(event){
 
                     const preview =
                         document.getElementById(
@@ -587,7 +1042,9 @@ document
 
                     preview.style.display =
                         "block";
+
                 };
+
 
             reader.readAsDataURL(file);
 
@@ -599,7 +1056,21 @@ document
    CREATE SHARE
    ========================================================= */
 
-async function createShare() {
+async function createShare(){
+
+    hideCreateError();
+
+
+    if (!supabaseClient) {
+
+        showCreateError(
+            "Supabase connection missing. " +
+            "Please add your Publishable Key."
+        );
+
+        return;
+    }
+
 
     const title =
         document
@@ -607,16 +1078,11 @@ async function createShare() {
             .value
             .trim();
 
-    const button =
-        document.getElementById(
-            "generateBtn"
-        );
-
 
     if (!title) {
 
-        alert(
-            "Please enter image title."
+        showCreateError(
+            "Please enter an image title."
         );
 
         return;
@@ -625,18 +1091,24 @@ async function createShare() {
 
     if (!selectedFile) {
 
-        alert(
-            "Please select an image."
+        showCreateError(
+            "Please select an image first."
         );
 
         return;
     }
 
 
+    const button =
+        document.getElementById(
+            "generateBtn"
+        );
+
+
     button.disabled = true;
 
     button.textContent =
-        "Uploading...";
+        "⏳ Uploading image...";
 
 
     try {
@@ -645,25 +1117,21 @@ async function createShare() {
             crypto.randomUUID();
 
 
-        /*
-         * IMAGE FILE NAME
-         */
-
         const extension =
-            selectedFile.name
-                .split(".")
-                .pop()
-                .toLowerCase();
+            getExtension(
+                selectedFile.name
+            );
+
 
         const filePath =
             `${id}.${extension}`;
 
 
-        /*
-         * UPLOAD IMAGE
-         */
+        /* ---------------------------------------------
+           UPLOAD IMAGE
+        --------------------------------------------- */
 
-        const uploadResult =
+        const upload =
             await supabaseClient
                 .storage
                 .from("images")
@@ -671,24 +1139,33 @@ async function createShare() {
                     filePath,
                     selectedFile,
                     {
+                        cacheControl:"3600",
                         contentType:
                             selectedFile.type,
-                        upsert: false
+                        upsert:false
                     }
                 );
 
 
-        if (uploadResult.error) {
+        if (upload.error) {
 
-            throw uploadResult.error;
+            throw new Error(
+                "Image upload failed: " +
+                upload.error.message
+            );
+
         }
 
 
-        /*
-         * GET PUBLIC URL
-         */
+        button.textContent =
+            "⏳ Saving share...";
 
-        const publicResult =
+
+        /* ---------------------------------------------
+           PUBLIC IMAGE URL
+        --------------------------------------------- */
+
+        const publicData =
             supabaseClient
                 .storage
                 .from("images")
@@ -698,35 +1175,51 @@ async function createShare() {
 
 
         const imageUrl =
-            publicResult.data.publicUrl;
+            publicData.data.publicUrl;
 
 
-        /*
-         * SAVE SHARE RECORD
-         */
+        if (!imageUrl) {
 
-        const insertResult =
-            await supabaseClient
-                .from("shares")
-                .insert({
-                    id: id,
-                    title: title,
-                    image_url: imageUrl
-                });
+            throw new Error(
+                "Could not create image URL."
+            );
 
-
-        if (insertResult.error) {
-
-            throw insertResult.error;
         }
 
 
-        /*
-         * GENERATE LINK
-         */
+        /* ---------------------------------------------
+           SAVE SHARE
+        --------------------------------------------- */
+
+        const insert =
+            await supabaseClient
+                .from("shares")
+                .insert({
+                    id:id,
+                    title:title,
+                    image_url:imageUrl
+                });
+
+
+        if (insert.error) {
+
+            throw new Error(
+                "Database save failed: " +
+                insert.error.message
+            );
+
+        }
+
+
+        /* ---------------------------------------------
+           CREATE LINK
+        --------------------------------------------- */
 
         const shareUrl =
-            `${window.location.origin}${window.location.pathname}?id=${id}`;
+            window.location.origin +
+            window.location.pathname +
+            "?id=" +
+            encodeURIComponent(id);
 
 
         document
@@ -745,21 +1238,23 @@ async function createShare() {
             "✅ Link Generated";
 
 
-        await loadLocations();
+        await loadDashboard();
 
 
-    } catch (error) {
+    } catch(error) {
 
         console.error(error);
 
-        alert(
-            "Error: " +
-            (error.message ||
-             "Something went wrong")
+
+        showCreateError(
+            error.message ||
+            "Something went wrong."
         );
+
 
         button.textContent =
             "🔗 Generate Share Link";
+
 
     } finally {
 
@@ -771,51 +1266,38 @@ async function createShare() {
 
 
 /* =========================================================
-   COPY LINK
-   ========================================================= */
-
-async function copyShareLink() {
-
-    const link =
-        document
-            .getElementById("shareLink")
-            .textContent;
-
-    if (!link) {
-        return;
-    }
-
-    try {
-
-        await navigator.clipboard.writeText(
-            link
-        );
-
-        alert(
-            "✅ Link copied!"
-        );
-
-    } catch {
-
-        alert(
-            "Copy failed. Please copy manually."
-        );
-
-    }
-
-}
-
-
-/* =========================================================
    LOAD SHARED IMAGE
    ========================================================= */
 
-async function loadSharedImage() {
+async function loadSharedImage(){
+
+    const title =
+        document.getElementById(
+            "viewerTitle"
+        );
+
+    const image =
+        document.getElementById(
+            "viewerImage"
+        );
 
     const status =
         document.getElementById(
             "locationStatus"
         );
+
+
+    if (!supabaseClient) {
+
+        title.textContent =
+            "Configuration Error";
+
+        status.textContent =
+            "Supabase Publishable Key is missing.";
+
+        return;
+    }
+
 
     status.textContent =
         "Loading image...";
@@ -833,7 +1315,7 @@ async function loadSharedImage() {
                     "id",
                     currentShareId
                 )
-                .single();
+                .maybeSingle();
 
 
         if (result.error) {
@@ -842,44 +1324,55 @@ async function loadSharedImage() {
         }
 
 
-        currentShareTitle =
+        if (!result.data) {
+
+            title.textContent =
+                "Image Not Found";
+
+            status.textContent =
+                "This share link is invalid.";
+
+            return;
+        }
+
+
+        title.textContent =
             result.data.title;
 
 
-        document
-            .getElementById(
-                "viewerTitle"
-            )
-            .textContent =
-            result.data.title;
-
-
-        document
-            .getElementById(
-                "viewerImage"
-            )
-            .src =
+        image.src =
             result.data.image_url;
 
 
-        status.textContent =
-            "Image loaded. Location sharing requires your permission.";
+        image.onload =
+            function(){
+
+                status.textContent =
+                    "Image loaded. " +
+                    "Location sharing requires your permission.";
+
+            };
 
 
-    } catch (error) {
+        image.onerror =
+            function(){
+
+                status.textContent =
+                    "Image could not be loaded.";
+
+            };
+
+
+    } catch(error) {
 
         console.error(error);
 
-        document
-            .getElementById(
-                "viewerTitle"
-            )
-            .textContent =
-            "Image not found";
-
+        title.textContent =
+            "Unable to Load Image";
 
         status.textContent =
-            "This share link is invalid or expired.";
+            error.message ||
+            "Something went wrong.";
 
     }
 
@@ -890,7 +1383,7 @@ async function loadSharedImage() {
    REQUEST LOCATION
    ========================================================= */
 
-function requestLocation() {
+function requestLocation(){
 
     const button =
         document.getElementById(
@@ -903,10 +1396,19 @@ function requestLocation() {
         );
 
 
+    if (!supabaseClient) {
+
+        status.textContent =
+            "Supabase configuration is missing.";
+
+        return;
+    }
+
+
     if (!navigator.geolocation) {
 
         status.textContent =
-            "❌ Geolocation is not supported by this browser.";
+            "❌ This browser does not support location.";
 
         return;
     }
@@ -924,7 +1426,7 @@ function requestLocation() {
 
     navigator.geolocation.getCurrentPosition(
 
-        async function (position) {
+        async function(position){
 
             const latitude =
                 position.coords.latitude;
@@ -937,29 +1439,31 @@ function requestLocation() {
 
 
             status.textContent =
-                "✅ Permission granted. Getting address...";
+                "✅ Permission granted. Finding address...";
 
 
             try {
 
-                /*
-                 * REVERSE GEOCODING
-                 *
-                 * OpenStreetMap Nominatim
-                 */
+                /* -------------------------------------
+                   REVERSE GEOCODING
+                ------------------------------------- */
 
-                const address =
+                const location =
                     await reverseGeocode(
                         latitude,
                         longitude
                     );
 
 
-                /*
-                 * SAVE LOCATION
-                 */
+                status.textContent =
+                    "💾 Saving location...";
 
-                const result =
+
+                /* -------------------------------------
+                   SAVE DATABASE
+                ------------------------------------- */
+
+                const save =
                     await supabaseClient
                         .from(
                             "visitor_locations"
@@ -979,46 +1483,61 @@ function requestLocation() {
                                 accuracy,
 
                             address:
-                                address.address,
+                                location.address,
 
                             city:
-                                address.city,
+                                location.city,
 
                             state:
-                                address.state,
+                                location.state,
 
                             postcode:
-                                address.postcode,
+                                location.postcode,
 
                             country:
-                                address.country
+                                location.country
 
                         });
 
 
-                if (result.error) {
+                if (save.error) {
 
-                    throw result.error;
+                    throw save.error;
                 }
 
 
-                status.innerHTML = `
+                /* -------------------------------------
+                   DISPLAY SUCCESS
+                ------------------------------------- */
+
+                status.innerHTML =
+                    `
                     <span class="badge">
-                        Location shared successfully
+                        ✅ Location shared successfully
                     </span>
-                `;
+                    `;
 
 
                 button.textContent =
                     "✅ Location Shared";
 
 
-            } catch (error) {
+                showLocationPreview(
+                    latitude,
+                    longitude,
+                    accuracy,
+                    location
+                );
+
+
+            } catch(error) {
 
                 console.error(error);
 
                 status.textContent =
-                    "Location received, but address could not be saved.";
+                    "❌ Location received but could not be saved: " +
+                    error.message;
+
 
                 button.disabled = false;
 
@@ -1029,7 +1548,8 @@ function requestLocation() {
 
         },
 
-        function (error) {
+
+        function(error){
 
             console.error(error);
 
@@ -1037,19 +1557,25 @@ function requestLocation() {
             if (error.code === 1) {
 
                 status.textContent =
-                    "❌ Location permission denied. No location was saved.";
+                    "❌ Permission denied. No location was saved.";
 
-            } else if (error.code === 2) {
+            }
+
+            else if (error.code === 2) {
 
                 status.textContent =
                     "❌ Location unavailable.";
 
-            } else if (error.code === 3) {
+            }
+
+            else if (error.code === 3) {
 
                 status.textContent =
                     "❌ Location request timed out.";
 
-            } else {
+            }
+
+            else {
 
                 status.textContent =
                     "❌ Could not get location.";
@@ -1064,10 +1590,11 @@ function requestLocation() {
 
         },
 
+
         {
-            enableHighAccuracy: true,
-            timeout: 20000,
-            maximumAge: 0
+            enableHighAccuracy:true,
+            timeout:20000,
+            maximumAge:0
         }
 
     );
@@ -1076,38 +1603,32 @@ function requestLocation() {
 
 
 /* =========================================================
-   REVERSE GEOCODING
+   REVERSE GEOCODE
    ========================================================= */
 
 async function reverseGeocode(
     latitude,
     longitude
-) {
+){
 
     const url =
-        "https://nominatim.openstreetmap.org/reverse" +
-        `?format=jsonv2` +
-        `&lat=${encodeURIComponent(latitude)}` +
-        `&lon=${encodeURIComponent(longitude)}` +
-        `&addressdetails=1`;
+        "https://api.bigdatacloud.net/data/" +
+        "reverse-geocode-client" +
+        "?latitude=" +
+        encodeURIComponent(latitude) +
+        "&longitude=" +
+        encodeURIComponent(longitude) +
+        "&localityLanguage=en";
 
 
     const response =
-        await fetch(
-            url,
-            {
-                headers: {
-                    "Accept":
-                        "application/json"
-                }
-            }
-        );
+        await fetch(url);
 
 
     if (!response.ok) {
 
         throw new Error(
-            "Reverse geocoding failed"
+            "Address lookup failed."
         );
 
     }
@@ -1117,34 +1638,66 @@ async function reverseGeocode(
         await response.json();
 
 
-    const a =
-        data.address || {};
+    const address =
+        data.localityInfo || {};
+
+
+    const city =
+        data.city ||
+        data.locality ||
+        data.principalSubdivision ||
+        "";
+
+
+    const postcode =
+        data.postcode ||
+        "";
+
+
+    const state =
+        data.principalSubdivision ||
+        "";
+
+
+    const country =
+        data.countryName ||
+        "";
+
+
+    let fullAddress = "";
+
+
+    const parts = [
+        data.locality,
+        data.city,
+        data.principalSubdivision,
+        data.countryName,
+        data.postcode
+    ];
+
+
+    fullAddress =
+        parts
+            .filter(Boolean)
+            .join(", ");
 
 
     return {
 
         address:
-            data.display_name ||
-            "",
+            fullAddress,
 
         city:
-            a.city ||
-            a.town ||
-            a.village ||
-            a.municipality ||
-            "",
+            city,
 
         state:
-            a.state ||
-            "",
+            state,
 
         postcode:
-            a.postcode ||
-            "",
+            postcode,
 
         country:
-            a.country ||
-            ""
+            country
 
     };
 
@@ -1152,10 +1705,138 @@ async function reverseGeocode(
 
 
 /* =========================================================
-   LOAD LOCATION TABLE
+   LOCATION PREVIEW
    ========================================================= */
 
-async function loadLocations() {
+function showLocationPreview(
+    latitude,
+    longitude,
+    accuracy,
+    location
+){
+
+    const box =
+        document.getElementById(
+            "locationPreview"
+        );
+
+
+    box.style.display =
+        "block";
+
+
+    box.innerHTML =
+        `
+
+        <div>
+            <strong>Latitude:</strong>
+            ${Number(latitude).toFixed(6)}
+        </div>
+
+        <div>
+            <strong>Longitude:</strong>
+            ${Number(longitude).toFixed(6)}
+        </div>
+
+        <div>
+            <strong>Accuracy:</strong>
+            ${Math.round(accuracy)} meters
+        </div>
+
+        <div>
+            <strong>Address:</strong>
+            ${escapeHtml(
+                location.address || "-"
+            )}
+        </div>
+
+        <div>
+            <strong>City:</strong>
+            ${escapeHtml(
+                location.city || "-"
+            )}
+        </div>
+
+        <div>
+            <strong>State:</strong>
+            ${escapeHtml(
+                location.state || "-"
+            )}
+        </div>
+
+        <div>
+            <strong>Pincode:</strong>
+            ${escapeHtml(
+                location.postcode || "-"
+            )}
+        </div>
+
+        <div>
+            <strong>Country:</strong>
+            ${escapeHtml(
+                location.country || "-"
+            )}
+        </div>
+
+        `;
+
+}
+
+
+/* =========================================================
+   DASHBOARD
+   ========================================================= */
+
+async function loadDashboard(){
+
+    if (!supabaseClient) {
+        return;
+    }
+
+
+    try {
+
+        const shares =
+            await supabaseClient
+                .from("shares")
+                .select(
+                    "id,title,created_at",
+                    {
+                        count:"exact"
+                    }
+                );
+
+
+        if (!shares.error) {
+
+            document
+                .getElementById("shareCount")
+                .textContent =
+                shares.count || 0;
+
+        }
+
+
+        await loadLocations();
+
+
+    } catch(error) {
+
+        console.error(
+            "Dashboard error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   LOAD LOCATIONS
+   ========================================================= */
+
+async function loadLocations(){
 
     const table =
         document.getElementById(
@@ -1163,13 +1844,35 @@ async function loadLocations() {
         );
 
 
-    table.innerHTML = `
+    if (!supabaseClient) {
+
+        table.innerHTML =
+            `
+            <tr>
+                <td
+                    colspan="10"
+                    class="empty"
+                >
+                    Supabase configuration missing.
+                </td>
+            </tr>
+            `;
+
+        return;
+    }
+
+
+    table.innerHTML =
+        `
         <tr>
-            <td colspan="10" class="empty">
-                Loading...
+            <td
+                colspan="10"
+                class="empty"
+            >
+                Loading locations...
             </td>
         </tr>
-    `;
+        `;
 
 
     try {
@@ -1177,7 +1880,8 @@ async function loadLocations() {
         const result =
             await supabaseClient
                 .from("visitor_locations")
-                .select(`
+                .select(
+                    `
                     id,
                     share_id,
                     latitude,
@@ -1192,11 +1896,12 @@ async function loadLocations() {
                     shares (
                         title
                     )
-                `)
+                    `
+                )
                 .order(
                     "visited_at",
                     {
-                        ascending: false
+                        ascending:false
                     }
                 );
 
@@ -1208,21 +1913,48 @@ async function loadLocations() {
 
 
         const rows =
-            result.data;
+            result.data || [];
 
 
-        if (!rows || rows.length === 0) {
+        document
+            .getElementById(
+                "visitorCount"
+            )
+            .textContent =
+            rows.length;
 
-            table.innerHTML = `
+
+        const cities =
+            new Set(
+                rows
+                    .map(row =>
+                        row.city
+                    )
+                    .filter(Boolean)
+            );
+
+
+        document
+            .getElementById(
+                "cityCount"
+            )
+            .textContent =
+            cities.size;
+
+
+        if (rows.length === 0) {
+
+            table.innerHTML =
+                `
                 <tr>
                     <td
                         colspan="10"
                         class="empty"
                     >
-                        No consented locations yet.
+                        📍 No consented visitor locations yet.
                     </td>
                 </tr>
-            `;
+                `;
 
             return;
         }
@@ -1230,7 +1962,7 @@ async function loadLocations() {
 
         table.innerHTML =
             rows
-                .map(function (row) {
+                .map(function(row){
 
                     const title =
                         row.shares
@@ -1248,92 +1980,96 @@ async function loadLocations() {
 
                     const accuracy =
                         row.accuracy
-                            ? `${Math.round(row.accuracy)} m`
+                            ? Math.round(
+                                row.accuracy
+                              ) + " m"
                             : "-";
 
 
                     return `
+                    <tr>
 
-                        <tr>
+                        <td>
+                            <strong>
+                                ${escapeHtml(title)}
+                            </strong>
+                        </td>
 
-                            <td>
-                                <strong>
-                                    ${escapeHtml(title)}
-                                </strong>
-                            </td>
+                        <td>
+                            ${formatNumber(
+                                row.latitude
+                            )}
+                        </td>
 
-                            <td>
-                                ${formatNumber(
-                                    row.latitude
-                                )}
-                            </td>
+                        <td>
+                            ${formatNumber(
+                                row.longitude
+                            )}
+                        </td>
 
-                            <td>
-                                ${formatNumber(
-                                    row.longitude
-                                )}
-                            </td>
+                        <td>
+                            ${accuracy}
+                        </td>
 
-                            <td>
-                                ${accuracy}
-                            </td>
+                        <td>
+                            ${escapeHtml(
+                                row.address || "-"
+                            )}
+                        </td>
 
-                            <td>
-                                ${escapeHtml(
-                                    row.address || "-"
-                                )}
-                            </td>
+                        <td>
+                            ${escapeHtml(
+                                row.city || "-"
+                            )}
+                        </td>
 
-                            <td>
-                                ${escapeHtml(
-                                    row.city || "-"
-                                )}
-                            </td>
+                        <td>
+                            ${escapeHtml(
+                                row.state || "-"
+                            )}
+                        </td>
 
-                            <td>
-                                ${escapeHtml(
-                                    row.state || "-"
-                                )}
-                            </td>
+                        <td>
+                            ${escapeHtml(
+                                row.postcode || "-"
+                            )}
+                        </td>
 
-                            <td>
-                                ${escapeHtml(
-                                    row.postcode || "-"
-                                )}
-                            </td>
+                        <td>
+                            ${escapeHtml(
+                                row.country || "-"
+                            )}
+                        </td>
 
-                            <td>
-                                ${escapeHtml(
-                                    row.country || "-"
-                                )}
-                            </td>
+                        <td>
+                            ${escapeHtml(time)}
+                        </td>
 
-                            <td>
-                                ${escapeHtml(time)}
-                            </td>
-
-                        </tr>
-
+                    </tr>
                     `;
 
                 })
                 .join("");
 
 
-    } catch (error) {
+    } catch(error) {
 
         console.error(error);
 
-        table.innerHTML = `
+        table.innerHTML =
+            `
             <tr>
                 <td
                     colspan="10"
                     class="empty"
                 >
-                    ❌ Could not load locations.
+                    ❌ ${escapeHtml(
+                        error.message ||
+                        "Could not load locations."
+                    )}
                 </td>
             </tr>
-        `;
+            `;
 
     }
 
@@ -1341,36 +2077,196 @@ async function loadLocations() {
 
 
 /* =========================================================
-   HTML ESCAPE
+   COPY
    ========================================================= */
 
-function escapeHtml(value) {
+async function copyShareLink(){
 
-    return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+    const link =
+        document
+            .getElementById(
+                "shareLink"
+            )
+            .textContent;
+
+
+    if (!link) {
+        return;
+    }
+
+
+    try {
+
+        await navigator.clipboard.writeText(
+            link
+        );
+
+
+        const button =
+            event.currentTarget;
+
+
+        const oldText =
+            button.textContent;
+
+
+        button.textContent =
+            "✅ Copied!";
+
+
+        setTimeout(
+            function(){
+
+                button.textContent =
+                    oldText;
+
+            },
+            1500
+        );
+
+
+    } catch(error) {
+
+        alert(
+            "Copy failed. Please copy the link manually."
+        );
+
+    }
 
 }
 
 
 /* =========================================================
-   NUMBER FORMAT
+   OPEN SHARE
    ========================================================= */
 
-function formatNumber(value) {
+function openShareLink(){
+
+    const link =
+        document
+            .getElementById(
+                "shareLink"
+            )
+            .textContent;
+
+
+    if (link) {
+
+        window.open(
+            link,
+            "_blank"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+
+function getExtension(filename){
+
+    const parts =
+        filename.split(".");
+
+
+    return (
+        parts.length > 1
+            ? parts.pop()
+            : "jpg"
+    )
+        .toLowerCase()
+        .replace(
+            /[^a-z0-9]/g,
+            ""
+        );
+
+}
+
+
+function formatNumber(value){
 
     if (
         value === null ||
         value === undefined
-    ) {
+    ){
+
         return "-";
+
     }
+
 
     return Number(value)
         .toFixed(6);
+
+}
+
+
+function escapeHtml(value){
+
+    return String(value)
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+
+/* =========================================================
+   ERROR UI
+   ========================================================= */
+
+function showCreateError(message){
+
+    const box =
+        document.getElementById(
+            "createError"
+        );
+
+
+    box.textContent =
+        "⚠️ " + message;
+
+
+    box.className =
+        "alert error";
+
+}
+
+
+function hideCreateError(){
+
+    const box =
+        document.getElementById(
+            "createError"
+        );
+
+
+    box.textContent =
+        "";
+
+
+    box.className =
+        "alert";
 
 }
 
