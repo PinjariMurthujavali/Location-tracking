@@ -851,10 +851,15 @@ tr:hover td{
 
 
 <script>
+    /* =========================================================
+   GEOSHARE - COMPLETE JAVASCRIPT
+========================================================= */
+
 
 /* =========================================================
-   SUPABASE CONFIG
-   ========================================================= */
+   1. SUPABASE CONFIG
+========================================================= */
+
 
 const SUPABASE_URL =
     "https://hglehcluiqgbjbtvwsbh.supabase.co";
@@ -864,12 +869,12 @@ const SUPABASE_ANON_KEY =
     "sb_publishable__rcgeXfzaLjEK5eyds8qMA_QIqqApPU";
 
 
+
 /* =========================================================
-   SUPABASE CLIENT
-   ========================================================= */
+   2. SUPABASE CLIENT
+========================================================= */
 
 let supabaseClient = null;
-
 
 try {
 
@@ -888,7 +893,7 @@ try {
 
     }
 
-} catch(error) {
+} catch (error) {
 
     console.error(
         "Supabase initialization error:",
@@ -899,54 +904,91 @@ try {
 
 
 /* =========================================================
-   GLOBALS
-   ========================================================= */
+   3. GLOBAL VARIABLES
+========================================================= */
 
 let selectedFile = null;
 
 let currentShareId = null;
 
+let generatedShareUrl = "";
+
 
 /* =========================================================
-   URL
-   ========================================================= */
+   4. READ URL PARAMETER
+========================================================= */
 
-const params =
+const urlParams =
     new URLSearchParams(
         window.location.search
     );
 
 const shareId =
-    params.get("id");
+    urlParams.get("id");
 
 
 /* =========================================================
-   DOM READY
-   ========================================================= */
+   5. PAGE LOAD
+========================================================= */
 
 document.addEventListener(
     "DOMContentLoaded",
-    async function(){
+    async function () {
 
         if (shareId) {
 
-            document
-                .getElementById("adminSection")
-                .classList.add("hidden");
+            /*
+             * VISITOR PAGE
+             */
 
-            document
-                .getElementById("viewerSection")
-                .style.display = "block";
+            currentShareId =
+                shareId;
 
-            currentShareId = shareId;
+            const adminSection =
+                document.getElementById(
+                    "adminSection"
+                );
+
+            const viewerSection =
+                document.getElementById(
+                    "viewerSection"
+                );
+
+            if (adminSection) {
+
+                adminSection.classList.add(
+                    "hidden"
+                );
+
+            }
+
+            if (viewerSection) {
+
+                viewerSection.style.display =
+                    "block";
+
+            }
 
             await loadSharedImage();
 
         } else {
 
-            document
-                .getElementById("adminSection")
-                .classList.remove("hidden");
+            /*
+             * ADMIN / DASHBOARD PAGE
+             */
+
+            const adminSection =
+                document.getElementById(
+                    "adminSection"
+                );
+
+            if (adminSection) {
+
+                adminSection.classList.remove(
+                    "hidden"
+                );
+
+            }
 
             checkSupabase();
 
@@ -959,83 +1001,125 @@ document.addEventListener(
 
 
 /* =========================================================
-   SUPABASE CHECK
-   ========================================================= */
+   6. CHECK SUPABASE
+========================================================= */
 
-function checkSupabase(){
+function checkSupabase() {
 
     if (!supabaseClient) {
 
         showCreateError(
             "Supabase is not connected. " +
-            "Open this file and replace " +
-            "PASTE_YOUR_PUBLISHABLE_KEY_HERE " +
-            "with your Supabase Publishable Key."
+            "Please add your Publishable Key."
         );
 
+        return false;
+
     }
+
+    return true;
 
 }
 
 
 /* =========================================================
-   FILE INPUT
-   ========================================================= */
+   7. IMAGE FILE SELECTION
+========================================================= */
 
-document
-    .getElementById("imageInput")
-    .addEventListener(
+const imageInput =
+    document.getElementById(
+        "imageInput"
+    );
+
+
+if (imageInput) {
+
+    imageInput.addEventListener(
         "change",
-        function(){
+        function () {
 
             const file =
                 this.files[0];
 
             if (!file) {
+
+                selectedFile = null;
+
                 return;
+
             }
 
 
-            if (!file.type.startsWith("image/")) {
+            /*
+             * CHECK IMAGE TYPE
+             */
+
+            if (
+                !file.type.startsWith(
+                    "image/"
+                )
+            ) {
 
                 showCreateError(
-                    "Please select a valid image."
+                    "Please select a valid image file."
                 );
 
                 this.value = "";
 
+                selectedFile = null;
+
                 return;
+
             }
 
 
-            if (file.size > 10 * 1024 * 1024) {
+            /*
+             * MAX 10 MB
+             */
+
+            if (
+                file.size >
+                10 * 1024 * 1024
+            ) {
 
                 showCreateError(
-                    "Image must be smaller than 10MB."
+                    "Image size must be less than 10MB."
                 );
 
                 this.value = "";
 
+                selectedFile = null;
+
                 return;
+
             }
 
 
-            selectedFile = file;
+            selectedFile =
+                file;
 
             hideCreateError();
 
+
+            /*
+             * SHOW PREVIEW
+             */
 
             const reader =
                 new FileReader();
 
 
             reader.onload =
-                function(event){
+                function (event) {
 
                     const preview =
                         document.getElementById(
                             "preview"
                         );
+
+                    if (!preview) {
+                        return;
+                    }
 
                     preview.src =
                         event.target.result;
@@ -1046,38 +1130,55 @@ document
                 };
 
 
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(
+                file
+            );
 
         }
     );
 
+}
+
 
 /* =========================================================
-   CREATE SHARE
-   ========================================================= */
+   8. CREATE SHARE LINK
+========================================================= */
 
-async function createShare(){
+async function createShare() {
 
     hideCreateError();
 
 
-    if (!supabaseClient) {
+    /*
+     * CHECK SUPABASE
+     */
 
-        showCreateError(
-            "Supabase connection missing. " +
-            "Please add your Publishable Key."
-        );
+    if (!checkSupabase()) {
 
         return;
+
     }
 
 
-    const title =
-        document
-            .getElementById("title")
-            .value
-            .trim();
+    /*
+     * GET TITLE
+     */
 
+    const titleInput =
+        document.getElementById(
+            "title"
+        );
+
+
+    const title =
+        titleInput
+            ? titleInput.value.trim()
+            : "";
+
+
+    /*
+     * VALIDATE TITLE
+     */
 
     if (!title) {
 
@@ -1085,9 +1186,18 @@ async function createShare(){
             "Please enter an image title."
         );
 
+        if (titleInput) {
+            titleInput.focus();
+        }
+
         return;
+
     }
 
+
+    /*
+     * VALIDATE IMAGE
+     */
 
     if (!selectedFile) {
 
@@ -1096,8 +1206,13 @@ async function createShare(){
         );
 
         return;
+
     }
 
+
+    /*
+     * BUTTON
+     */
 
     const button =
         document.getElementById(
@@ -1105,17 +1220,29 @@ async function createShare(){
         );
 
 
-    button.disabled = true;
+    if (button) {
 
-    button.textContent =
-        "⏳ Uploading image...";
+        button.disabled = true;
+
+        button.textContent =
+            "⏳ Uploading image...";
+
+    }
 
 
     try {
 
+        /*
+         * UNIQUE SHARE ID
+         */
+
         const id =
             crypto.randomUUID();
 
+
+        /*
+         * FILE EXTENSION
+         */
 
         const extension =
             getExtension(
@@ -1124,14 +1251,16 @@ async function createShare(){
 
 
         const filePath =
-            `${id}.${extension}`;
+            id + "." + extension;
 
 
-        /* ---------------------------------------------
-           UPLOAD IMAGE
-        --------------------------------------------- */
+        /*
+         * ---------------------------------------------
+         * UPLOAD IMAGE TO SUPABASE STORAGE
+         * ---------------------------------------------
+         */
 
-        const upload =
+        const uploadResult =
             await supabaseClient
                 .storage
                 .from("images")
@@ -1139,33 +1268,43 @@ async function createShare(){
                     filePath,
                     selectedFile,
                     {
-                        cacheControl:"3600",
+                        cacheControl:
+                            "3600",
+
                         contentType:
                             selectedFile.type,
-                        upsert:false
+
+                        upsert:
+                            false
                     }
                 );
 
 
-        if (upload.error) {
+        if (uploadResult.error) {
 
             throw new Error(
                 "Image upload failed: " +
-                upload.error.message
+                uploadResult.error.message
             );
 
         }
 
 
-        button.textContent =
-            "⏳ Saving share...";
+        if (button) {
+
+            button.textContent =
+                "⏳ Creating share...";
+
+        }
 
 
-        /* ---------------------------------------------
-           PUBLIC IMAGE URL
-        --------------------------------------------- */
+        /*
+         * ---------------------------------------------
+         * GET PUBLIC IMAGE URL
+         * ---------------------------------------------
+         */
 
-        const publicData =
+        const publicUrlResult =
             supabaseClient
                 .storage
                 .from("images")
@@ -1175,90 +1314,150 @@ async function createShare(){
 
 
         const imageUrl =
-            publicData.data.publicUrl;
+            publicUrlResult.data
+                .publicUrl;
 
 
         if (!imageUrl) {
 
             throw new Error(
-                "Could not create image URL."
+                "Could not generate public image URL."
             );
 
         }
 
 
-        /* ---------------------------------------------
-           SAVE SHARE
-        --------------------------------------------- */
+        /*
+         * ---------------------------------------------
+         * SAVE SHARE RECORD
+         * ---------------------------------------------
+         */
 
-        const insert =
+        const shareResult =
             await supabaseClient
                 .from("shares")
                 .insert({
-                    id:id,
-                    title:title,
-                    image_url:imageUrl
+
+                    id:
+                        id,
+
+                    title:
+                        title,
+
+                    image_url:
+                        imageUrl
+
                 });
 
 
-        if (insert.error) {
+        if (shareResult.error) {
 
             throw new Error(
-                "Database save failed: " +
-                insert.error.message
+                "Could not save share: " +
+                shareResult.error.message
             );
 
         }
 
 
-        /* ---------------------------------------------
-           CREATE LINK
-        --------------------------------------------- */
+        /*
+         * ---------------------------------------------
+         * GENERATE SHARE URL
+         * ---------------------------------------------
+         */
 
-        const shareUrl =
+        generatedShareUrl =
             window.location.origin +
             window.location.pathname +
             "?id=" +
             encodeURIComponent(id);
 
 
-        document
-            .getElementById("shareLink")
-            .textContent =
-            shareUrl;
+        /*
+         * SHOW LINK
+         */
+
+        const shareLink =
+            document.getElementById(
+                "shareLink"
+            );
 
 
-        document
-            .getElementById("shareResult")
-            .style.display =
-            "block";
+        if (shareLink) {
+
+            shareLink.textContent =
+                generatedShareUrl;
+
+        }
 
 
-        button.textContent =
-            "✅ Link Generated";
+        const shareResultBox =
+            document.getElementById(
+                "shareResult"
+            );
 
+
+        if (shareResultBox) {
+
+            shareResultBox.style.display =
+                "block";
+
+        }
+
+
+        if (button) {
+
+            button.textContent =
+                "✅ Link Generated";
+
+        }
+
+
+        /*
+         * REFRESH DASHBOARD
+         */
 
         await loadDashboard();
 
 
-    } catch(error) {
+    } catch (error) {
 
-        console.error(error);
+        console.error(
+            "Create share error:",
+            error
+        );
 
 
         showCreateError(
             error.message ||
-            "Something went wrong."
+            "Something went wrong while creating the link."
         );
 
 
-        button.textContent =
-            "🔗 Generate Share Link";
+        if (button) {
+
+            button.disabled =
+                false;
+
+            button.textContent =
+                "🔗 Generate Share Link";
+
+        }
 
 
-    } finally {
+        return;
 
-        button.disabled = false;
+    }
+
+
+    /*
+     * KEEP BUTTON ENABLED
+     */
+
+    if (button) {
+
+        button.disabled =
+            false;
 
     }
 
@@ -1266,22 +1465,148 @@ async function createShare(){
 
 
 /* =========================================================
-   LOAD SHARED IMAGE
-   ========================================================= */
+   9. COPY SHARE LINK
+========================================================= */
 
-async function loadSharedImage(){
+async function copyShareLink() {
 
-    const title =
+    const linkElement =
+        document.getElementById(
+            "shareLink"
+        );
+
+
+    if (!linkElement) {
+        return;
+    }
+
+
+    const link =
+        linkElement.textContent.trim();
+
+
+    if (!link) {
+
+        alert(
+            "Share link is not available."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        await navigator.clipboard.writeText(
+            link
+        );
+
+
+        alert(
+            "✅ Share link copied!"
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Copy error:",
+            error
+        );
+
+
+        /*
+         * FALLBACK
+         */
+
+        const temp =
+            document.createElement(
+                "textarea"
+            );
+
+        temp.value =
+            link;
+
+        document.body.appendChild(
+            temp
+        );
+
+        temp.select();
+
+        document.execCommand(
+            "copy"
+        );
+
+        temp.remove();
+
+
+        alert(
+            "✅ Share link copied!"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   10. OPEN SHARE LINK
+========================================================= */
+
+function openShareLink() {
+
+    const linkElement =
+        document.getElementById(
+            "shareLink"
+        );
+
+
+    if (!linkElement) {
+        return;
+    }
+
+
+    const link =
+        linkElement.textContent.trim();
+
+
+    if (!link) {
+
+        alert(
+            "Share link is not available."
+        );
+
+        return;
+
+    }
+
+
+    window.open(
+        link,
+        "_blank"
+    );
+
+}
+
+
+/* =========================================================
+   11. LOAD SHARED IMAGE
+========================================================= */
+
+async function loadSharedImage() {
+
+    const titleElement =
         document.getElementById(
             "viewerTitle"
         );
 
-    const image =
+    const imageElement =
         document.getElementById(
             "viewerImage"
         );
 
-    const status =
+    const statusElement =
         document.getElementById(
             "locationStatus"
         );
@@ -1289,18 +1614,45 @@ async function loadSharedImage(){
 
     if (!supabaseClient) {
 
-        title.textContent =
-            "Configuration Error";
+        if (titleElement) {
 
-        status.textContent =
-            "Supabase Publishable Key is missing.";
+            titleElement.textContent =
+                "Configuration Error";
+
+        }
+
+        if (statusElement) {
+
+            statusElement.textContent =
+                "Supabase configuration is missing.";
+
+        }
 
         return;
+
     }
 
 
-    status.textContent =
-        "Loading image...";
+    if (!currentShareId) {
+
+        if (statusElement) {
+
+            statusElement.textContent =
+                "Invalid share link.";
+
+        }
+
+        return;
+
+    }
+
+
+    if (statusElement) {
+
+        statusElement.textContent =
+            "Loading image...";
+
+    }
 
 
     try {
@@ -1321,58 +1673,86 @@ async function loadSharedImage(){
         if (result.error) {
 
             throw result.error;
+
         }
 
 
         if (!result.data) {
 
-            title.textContent =
-                "Image Not Found";
+            if (titleElement) {
 
-            status.textContent =
-                "This share link is invalid.";
+                titleElement.textContent =
+                    "Image Not Found";
+
+            }
+
+            if (statusElement) {
+
+                statusElement.textContent =
+                    "This share link is invalid.";
+
+            }
 
             return;
+
         }
 
 
-        title.textContent =
-            result.data.title;
+        /*
+         * TITLE
+         */
+
+        if (titleElement) {
+
+            titleElement.textContent =
+                result.data.title;
+
+        }
 
 
-        image.src =
-            result.data.image_url;
+        /*
+         * IMAGE
+         */
+
+        if (imageElement) {
+
+            imageElement.src =
+                result.data.image_url;
+
+        }
 
 
-        image.onload =
-            function(){
+        if (statusElement) {
 
-                status.textContent =
-                    "Image loaded. " +
-                    "Location sharing requires your permission.";
+            statusElement.textContent =
+                "Image loaded. You can choose to share your location.";
 
-            };
+        }
 
 
-        image.onerror =
-            function(){
+    } catch (error) {
 
-                status.textContent =
-                    "Image could not be loaded.";
+        console.error(
+            "Load image error:",
+            error
+        );
 
-            };
+
+        if (titleElement) {
+
+            titleElement.textContent =
+                "Unable to Load Image";
+
+        }
 
 
-    } catch(error) {
+        if (statusElement) {
 
-        console.error(error);
+            statusElement.textContent =
+                error.message ||
+                "Something went wrong.";
 
-        title.textContent =
-            "Unable to Load Image";
-
-        status.textContent =
-            error.message ||
-            "Something went wrong.";
+        }
 
     }
 
@@ -1380,10 +1760,10 @@ async function loadSharedImage(){
 
 
 /* =========================================================
-   REQUEST LOCATION
-   ========================================================= */
+   12. REQUEST LOCATION
+========================================================= */
 
-function requestLocation(){
+function requestLocation() {
 
     const button =
         document.getElementById(
@@ -1396,37 +1776,94 @@ function requestLocation(){
         );
 
 
+    /*
+     * CHECK SUPABASE
+     */
+
     if (!supabaseClient) {
 
-        status.textContent =
-            "Supabase configuration is missing.";
+        if (status) {
+
+            status.textContent =
+                "❌ Supabase configuration is missing.";
+
+        }
 
         return;
+
     }
 
+
+    /*
+     * CHECK SHARE ID
+     */
+
+    if (!currentShareId) {
+
+        if (status) {
+
+            status.textContent =
+                "❌ Invalid share link.";
+
+        }
+
+        return;
+
+    }
+
+
+    /*
+     * CHECK GEOLOCATION
+     */
 
     if (!navigator.geolocation) {
 
-        status.textContent =
-            "❌ This browser does not support location.";
+        if (status) {
+
+            status.textContent =
+                "❌ Your browser does not support location.";
+
+        }
 
         return;
+
     }
 
 
-    button.disabled = true;
+    /*
+     * LOADING
+     */
 
-    button.textContent =
-        "📍 Requesting permission...";
+    if (button) {
+
+        button.disabled =
+            true;
+
+        button.textContent =
+            "📍 Requesting permission...";
+
+    }
 
 
-    status.textContent =
-        "Please respond to the browser location permission.";
+    if (status) {
 
+        status.textContent =
+            "Please allow location access in your browser.";
+
+    }
+
+
+    /*
+     * GET LOCATION
+     */
 
     navigator.geolocation.getCurrentPosition(
 
-        async function(position){
+        async function(position) {
+
+            /*
+             * GPS
+             */
 
             const latitude =
                 position.coords.latitude;
@@ -1438,15 +1875,21 @@ function requestLocation(){
                 position.coords.accuracy;
 
 
-            status.textContent =
-                "✅ Permission granted. Finding address...";
+            if (status) {
+
+                status.textContent =
+                    "✅ Location received. Finding address...";
+
+            }
 
 
             try {
 
-                /* -------------------------------------
-                   REVERSE GEOCODING
-                ------------------------------------- */
+                /*
+                 * -------------------------------------
+                 * REVERSE GEOCODING
+                 * -------------------------------------
+                 */
 
                 const location =
                     await reverseGeocode(
@@ -1455,15 +1898,32 @@ function requestLocation(){
                     );
 
 
-                status.textContent =
-                    "💾 Saving location...";
+                if (status) {
+
+                    status.textContent =
+                        "💾 Saving location...";
+
+                }
 
 
-                /* -------------------------------------
-                   SAVE DATABASE
-                ------------------------------------- */
+                /*
+                 * -------------------------------------
+                 * EXACT VISIT TIME
+                 * -------------------------------------
+                 */
 
-                const save =
+                const visitedAt =
+                    new Date()
+                        .toISOString();
+
+
+                /*
+                 * -------------------------------------
+                 * SAVE LOCATION
+                 * -------------------------------------
+                 */
+
+                const saveResult =
                     await supabaseClient
                         .from(
                             "visitor_locations"
@@ -1483,118 +1943,185 @@ function requestLocation(){
                                 accuracy,
 
                             address:
-                                location.address,
+                                location.address ||
+                                "",
 
                             city:
-                                location.city,
+                                location.city ||
+                                "",
 
                             state:
-                                location.state,
+                                location.state ||
+                                "",
 
                             postcode:
-                                location.postcode,
+                                location.postcode ||
+                                "",
 
                             country:
-                                location.country
+                                location.country ||
+                                "",
+
+                            visited_at:
+                                visitedAt
 
                         });
 
 
-                if (save.error) {
+                if (saveResult.error) {
 
-                    throw save.error;
+                    throw saveResult.error;
+
                 }
 
 
-                /* -------------------------------------
-                   DISPLAY SUCCESS
-                ------------------------------------- */
+                /*
+                 * -------------------------------------
+                 * SUCCESS
+                 * -------------------------------------
+                 */
 
-                status.innerHTML =
-                    `
-                    <span class="badge">
-                        ✅ Location shared successfully
-                    </span>
-                    `;
+                if (status) {
+
+                    status.innerHTML =
+                        `
+                        <span class="badge">
+                            ✅ Location shared successfully
+                        </span>
+                        `;
+
+                }
 
 
-                button.textContent =
-                    "✅ Location Shared";
+                if (button) {
 
+                    button.textContent =
+                        "✅ Location Shared";
+
+                }
+
+
+                /*
+                 * SHOW DETAILS
+                 */
 
                 showLocationPreview(
                     latitude,
                     longitude,
                     accuracy,
-                    location
+                    location,
+                    visitedAt
                 );
 
 
-            } catch(error) {
+            } catch (error) {
 
-                console.error(error);
+                console.error(
+                    "Location save error:",
+                    error
+                );
 
-                status.textContent =
-                    "❌ Location received but could not be saved: " +
-                    error.message;
+
+                if (status) {
+
+                    status.textContent =
+                        "❌ Location received but could not be saved: " +
+                        error.message;
+
+                }
 
 
-                button.disabled = false;
+                if (button) {
+
+                    button.disabled =
+                        false;
+
+                    button.textContent =
+                        "📍 Try Again";
+
+                }
+
+            }
+
+        },
+
+
+        /*
+         * -------------------------------------
+         * LOCATION ERROR
+         * -------------------------------------
+         */
+
+        function(error) {
+
+            console.error(
+                "Geolocation error:",
+                error
+            );
+
+
+            if (status) {
+
+                if (error.code === 1) {
+
+                    status.textContent =
+                        "❌ Location permission denied. No location was saved.";
+
+                }
+
+                else if (error.code === 2) {
+
+                    status.textContent =
+                        "❌ Location is unavailable.";
+
+                }
+
+                else if (error.code === 3) {
+
+                    status.textContent =
+                        "❌ Location request timed out.";
+
+                }
+
+                else {
+
+                    status.textContent =
+                        "❌ Unable to get your location.";
+
+                }
+
+            }
+
+
+            if (button) {
+
+                button.disabled =
+                    false;
 
                 button.textContent =
-                    "📍 Try Again";
+                    "📍 Allow Location";
 
             }
 
         },
 
 
-        function(error){
-
-            console.error(error);
-
-
-            if (error.code === 1) {
-
-                status.textContent =
-                    "❌ Permission denied. No location was saved.";
-
-            }
-
-            else if (error.code === 2) {
-
-                status.textContent =
-                    "❌ Location unavailable.";
-
-            }
-
-            else if (error.code === 3) {
-
-                status.textContent =
-                    "❌ Location request timed out.";
-
-            }
-
-            else {
-
-                status.textContent =
-                    "❌ Could not get location.";
-
-            }
-
-
-            button.disabled = false;
-
-            button.textContent =
-                "📍 Allow Location";
-
-        },
-
+        /*
+         * -------------------------------------
+         * GPS OPTIONS
+         * -------------------------------------
+         */
 
         {
-            enableHighAccuracy:true,
-            timeout:20000,
-            maximumAge:0
+            enableHighAccuracy:
+                true,
+
+            timeout:
+                20000,
+
+            maximumAge:
+                0
+
         }
 
     );
@@ -1603,26 +2130,33 @@ function requestLocation(){
 
 
 /* =========================================================
-   REVERSE GEOCODE
-   ========================================================= */
+   13. REVERSE GEOCODING
+========================================================= */
 
 async function reverseGeocode(
     latitude,
     longitude
-){
+) {
+
+    /*
+     * OpenStreetMap Nominatim
+     */
 
     const url =
-        "https://api.bigdatacloud.net/data/" +
-        "reverse-geocode-client" +
-        "?latitude=" +
+        "https://nominatim.openstreetmap.org/reverse" +
+        "?format=jsonv2" +
+        "&lat=" +
         encodeURIComponent(latitude) +
-        "&longitude=" +
+        "&lon=" +
         encodeURIComponent(longitude) +
-        "&localityLanguage=en";
+        "&addressdetails=1" +
+        "&zoom=18";
 
 
     const response =
-        await fetch(url);
+        await fetch(
+            url
+        );
 
 
     if (!response.ok) {
@@ -1638,54 +2172,106 @@ async function reverseGeocode(
         await response.json();
 
 
-    const address =
-        data.localityInfo || {};
+    const addressData =
+        data.address || {};
 
+
+    /*
+     * CITY
+     */
 
     const city =
-        data.city ||
-        data.locality ||
-        data.principalSubdivision ||
+        addressData.city ||
+        addressData.town ||
+        addressData.village ||
+        addressData.municipality ||
+        addressData.suburb ||
         "";
 
 
-    const postcode =
-        data.postcode ||
-        "";
-
+    /*
+     * STATE
+     */
 
     const state =
-        data.principalSubdivision ||
+        addressData.state ||
+        addressData.state_district ||
         "";
 
+
+    /*
+     * PINCODE
+     */
+
+    let postcode =
+        addressData.postcode ||
+        "";
+
+
+    /*
+     * COUNTRY
+     */
 
     const country =
-        data.countryName ||
+        addressData.country ||
         "";
 
 
-    let fullAddress = "";
+    /*
+     * FULL ADDRESS
+     */
+
+    const address =
+        data.display_name ||
+        [
+            addressData.house_number,
+            addressData.road,
+            addressData.neighbourhood,
+            addressData.suburb,
+            city,
+            state,
+            postcode,
+            country
+        ]
+        .filter(Boolean)
+        .join(", ");
 
 
-    const parts = [
-        data.locality,
-        data.city,
-        data.principalSubdivision,
-        data.countryName,
-        data.postcode
-    ];
+    /*
+     * INDIA PINCODE FALLBACK
+     *
+     * If postcode field is missing,
+     * try extracting a 6 digit Indian PIN
+     * from display_name.
+     */
+
+    if (
+        !postcode &&
+        country.toLowerCase() ===
+        "india"
+    ) {
+
+        const match =
+            String(address)
+                .match(
+                    /\b[1-9][0-9]{5}\b/
+                );
 
 
-    fullAddress =
-        parts
-            .filter(Boolean)
-            .join(", ");
+        if (match) {
+
+            postcode =
+                match[0];
+
+        }
+
+    }
 
 
     return {
 
         address:
-            fullAddress,
+            address,
 
         city:
             city,
@@ -1705,15 +2291,16 @@ async function reverseGeocode(
 
 
 /* =========================================================
-   LOCATION PREVIEW
-   ========================================================= */
+   14. SHOW LOCATION DETAILS
+========================================================= */
 
 function showLocationPreview(
     latitude,
     longitude,
     accuracy,
-    location
-){
+    location,
+    visitedAt
+) {
 
     const box =
         document.getElementById(
@@ -1721,60 +2308,93 @@ function showLocationPreview(
         );
 
 
+    if (!box) {
+        return;
+    }
+
+
     box.style.display =
         "block";
+
+
+    /*
+     * FORMAT TIME
+     */
+
+    let displayTime =
+        "-";
+
+
+    if (visitedAt) {
+
+        displayTime =
+            new Date(
+                visitedAt
+            ).toLocaleString();
+
+    }
 
 
     box.innerHTML =
         `
 
         <div>
-            <strong>Latitude:</strong>
+            <strong>📍 Latitude:</strong>
             ${Number(latitude).toFixed(6)}
         </div>
 
         <div>
-            <strong>Longitude:</strong>
+            <strong>📍 Longitude:</strong>
             ${Number(longitude).toFixed(6)}
         </div>
 
         <div>
-            <strong>Accuracy:</strong>
-            ${Math.round(accuracy)} meters
+            <strong>🎯 Accuracy:</strong>
+            ${accuracy
+                ? Math.round(accuracy) + " meters"
+                : "-"
+            }
         </div>
 
         <div>
-            <strong>Address:</strong>
+            <strong>🏠 Address:</strong>
             ${escapeHtml(
                 location.address || "-"
             )}
         </div>
 
         <div>
-            <strong>City:</strong>
+            <strong>🏙️ City:</strong>
             ${escapeHtml(
                 location.city || "-"
             )}
         </div>
 
         <div>
-            <strong>State:</strong>
+            <strong>📌 State:</strong>
             ${escapeHtml(
                 location.state || "-"
             )}
         </div>
 
         <div>
-            <strong>Pincode:</strong>
+            <strong>📮 Pincode:</strong>
             ${escapeHtml(
                 location.postcode || "-"
             )}
         </div>
 
         <div>
-            <strong>Country:</strong>
+            <strong>🌎 Country:</strong>
             ${escapeHtml(
                 location.country || "-"
+            )}
+        </div>
+
+        <div>
+            <strong>🕒 Time:</strong>
+            ${escapeHtml(
+                displayTime
             )}
         </div>
 
@@ -1784,10 +2404,10 @@ function showLocationPreview(
 
 
 /* =========================================================
-   DASHBOARD
-   ========================================================= */
+   15. LOAD DASHBOARD
+========================================================= */
 
-async function loadDashboard(){
+async function loadDashboard() {
 
     if (!supabaseClient) {
         return;
@@ -1796,31 +2416,49 @@ async function loadDashboard(){
 
     try {
 
-        const shares =
+        /*
+         * SHARES COUNT
+         */
+
+        const sharesResult =
             await supabaseClient
                 .from("shares")
                 .select(
-                    "id,title,created_at",
+                    "id",
                     {
-                        count:"exact"
+                        count:
+                            "exact",
+                        head:
+                            true
                     }
                 );
 
 
-        if (!shares.error) {
+        const shareCountElement =
+            document.getElementById(
+                "shareCount"
+            );
 
-            document
-                .getElementById("shareCount")
-                .textContent =
-                shares.count || 0;
+
+        if (
+            shareCountElement &&
+            !sharesResult.error
+        ) {
+
+            shareCountElement.textContent =
+                sharesResult.count || 0;
 
         }
 
 
+        /*
+         * LOCATION TABLE
+         */
+
         await loadLocations();
 
 
-    } catch(error) {
+    } catch (error) {
 
         console.error(
             "Dashboard error:",
@@ -1833,15 +2471,20 @@ async function loadDashboard(){
 
 
 /* =========================================================
-   LOAD LOCATIONS
-   ========================================================= */
+   16. LOAD LOCATION TABLE
+========================================================= */
 
-async function loadLocations(){
+async function loadLocations() {
 
     const table =
         document.getElementById(
             "locationTable"
         );
+
+
+    if (!table) {
+        return;
+    }
 
 
     if (!supabaseClient) {
@@ -1859,6 +2502,7 @@ async function loadLocations(){
             `;
 
         return;
+
     }
 
 
@@ -1877,9 +2521,21 @@ async function loadLocations(){
 
     try {
 
+        /*
+         * FETCH LOCATIONS
+         *
+         * Foreign key:
+         *
+         * visitor_locations.share_id
+         *             ↓
+         * shares.id
+         */
+
         const result =
             await supabaseClient
-                .from("visitor_locations")
+                .from(
+                    "visitor_locations"
+                )
                 .select(
                     `
                     id,
@@ -1901,7 +2557,8 @@ async function loadLocations(){
                 .order(
                     "visited_at",
                     {
-                        ascending:false
+                        ascending:
+                            false
                     }
                 );
 
@@ -1909,6 +2566,7 @@ async function loadLocations(){
         if (result.error) {
 
             throw result.error;
+
         }
 
 
@@ -1916,31 +2574,64 @@ async function loadLocations(){
             result.data || [];
 
 
-        document
-            .getElementById(
+        /*
+         * VISITOR COUNT
+         */
+
+        const visitorCount =
+            document.getElementById(
                 "visitorCount"
-            )
-            .textContent =
-            rows.length;
-
-
-        const cities =
-            new Set(
-                rows
-                    .map(row =>
-                        row.city
-                    )
-                    .filter(Boolean)
             );
 
 
-        document
-            .getElementById(
-                "cityCount"
-            )
-            .textContent =
-            cities.size;
+        if (visitorCount) {
 
+            visitorCount.textContent =
+                rows.length;
+
+        }
+
+
+        /*
+         * CITY COUNT
+         */
+
+        const citySet =
+            new Set();
+
+
+        rows.forEach(
+            function(row) {
+
+                if (row.city) {
+
+                    citySet.add(
+                        row.city
+                    );
+
+                }
+
+            }
+        );
+
+
+        const cityCount =
+            document.getElementById(
+                "cityCount"
+            );
+
+
+        if (cityCount) {
+
+            cityCount.textContent =
+                citySet.size;
+
+        }
+
+
+        /*
+         * EMPTY
+         */
 
         if (rows.length === 0) {
 
@@ -1957,104 +2648,130 @@ async function loadLocations(){
                 `;
 
             return;
+
         }
 
 
+        /*
+         * BUILD TABLE
+         */
+
         table.innerHTML =
             rows
-                .map(function(row){
+                .map(
+                    function(row) {
 
-                    const title =
-                        row.shares
-                            ? row.shares.title
-                            : "Unknown";
-
-
-                    const time =
-                        row.visited_at
-                            ? new Date(
-                                row.visited_at
-                              ).toLocaleString()
-                            : "-";
+                        const title =
+                            row.shares &&
+                            row.shares.title
+                                ? row.shares.title
+                                : "Unknown";
 
 
-                    const accuracy =
-                        row.accuracy
-                            ? Math.round(
-                                row.accuracy
-                              ) + " m"
-                            : "-";
+                        const time =
+                            row.visited_at
+                                ? new Date(
+                                    row.visited_at
+                                  ).toLocaleString()
+                                : "-";
 
 
-                    return `
-                    <tr>
+                        const accuracy =
+                            row.accuracy !==
+                            null &&
+                            row.accuracy !==
+                            undefined
+                                ? Math.round(
+                                    row.accuracy
+                                  ) + " m"
+                                : "-";
 
-                        <td>
-                            <strong>
-                                ${escapeHtml(title)}
-                            </strong>
-                        </td>
 
-                        <td>
-                            ${formatNumber(
-                                row.latitude
-                            )}
-                        </td>
+                        return `
+                        <tr>
 
-                        <td>
-                            ${formatNumber(
-                                row.longitude
-                            )}
-                        </td>
+                            <td>
+                                <strong>
+                                    ${escapeHtml(
+                                        title
+                                    )}
+                                </strong>
+                            </td>
 
-                        <td>
-                            ${accuracy}
-                        </td>
+                            <td>
+                                ${formatNumber(
+                                    row.latitude
+                                )}
+                            </td>
 
-                        <td>
-                            ${escapeHtml(
-                                row.address || "-"
-                            )}
-                        </td>
+                            <td>
+                                ${formatNumber(
+                                    row.longitude
+                                )}
+                            </td>
 
-                        <td>
-                            ${escapeHtml(
-                                row.city || "-"
-                            )}
-                        </td>
+                            <td>
+                                ${escapeHtml(
+                                    accuracy
+                                )}
+                            </td>
 
-                        <td>
-                            ${escapeHtml(
-                                row.state || "-"
-                            )}
-                        </td>
+                            <td>
+                                ${escapeHtml(
+                                    row.address ||
+                                    "-"
+                                )}
+                            </td>
 
-                        <td>
-                            ${escapeHtml(
-                                row.postcode || "-"
-                            )}
-                        </td>
+                            <td>
+                                ${escapeHtml(
+                                    row.city ||
+                                    "-"
+                                )}
+                            </td>
 
-                        <td>
-                            ${escapeHtml(
-                                row.country || "-"
-                            )}
-                        </td>
+                            <td>
+                                ${escapeHtml(
+                                    row.state ||
+                                    "-"
+                                )}
+                            </td>
 
-                        <td>
-                            ${escapeHtml(time)}
-                        </td>
+                            <td>
+                                ${escapeHtml(
+                                    row.postcode ||
+                                    "-"
+                                )}
+                            </td>
 
-                    </tr>
-                    `;
+                            <td>
+                                ${escapeHtml(
+                                    row.country ||
+                                    "-"
+                                )}
+                            </td>
 
-                })
+                            <td>
+                                ${escapeHtml(
+                                    time
+                                )}
+                            </td>
+
+                        </tr>
+                        `;
+
+                    }
+                )
                 .join("");
 
 
-    } catch(error) {
+    } catch (error) {
 
-        console.error(error);
+        console.error(
+            "Location table error:",
+            error
+        );
+
 
         table.innerHTML =
             `
@@ -2077,152 +2794,142 @@ async function loadLocations(){
 
 
 /* =========================================================
-   COPY
-   ========================================================= */
+   17. GET FILE EXTENSION
+========================================================= */
 
-async function copyShareLink(){
-
-    const link =
-        document
-            .getElementById(
-                "shareLink"
-            )
-            .textContent;
-
-
-    if (!link) {
-        return;
-    }
-
-
-    try {
-
-        await navigator.clipboard.writeText(
-            link
-        );
-
-
-        const button =
-            event.currentTarget;
-
-
-        const oldText =
-            button.textContent;
-
-
-        button.textContent =
-            "✅ Copied!";
-
-
-        setTimeout(
-            function(){
-
-                button.textContent =
-                    oldText;
-
-            },
-            1500
-        );
-
-
-    } catch(error) {
-
-        alert(
-            "Copy failed. Please copy the link manually."
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   OPEN SHARE
-   ========================================================= */
-
-function openShareLink(){
-
-    const link =
-        document
-            .getElementById(
-                "shareLink"
-            )
-            .textContent;
-
-
-    if (link) {
-
-        window.open(
-            link,
-            "_blank"
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   HELPERS
-   ========================================================= */
-
-function getExtension(filename){
+function getExtension(
+    filename
+) {
 
     const parts =
-        filename.split(".");
+        String(filename)
+            .split(".");
 
 
-    return (
-        parts.length > 1
-            ? parts.pop()
-            : "jpg"
-    )
-        .toLowerCase()
-        .replace(
+    if (
+        parts.length <
+        2
+    ) {
+
+        return "jpg";
+
+    }
+
+
+    let extension =
+        parts
+            .pop()
+            .toLowerCase();
+
+
+    extension =
+        extension.replace(
             /[^a-z0-9]/g,
             ""
         );
 
+
+    /*
+     * SAFETY
+     */
+
+    const allowed =
+        [
+            "jpg",
+            "jpeg",
+            "png",
+            "webp",
+            "gif"
+        ];
+
+
+    if (
+        !allowed.includes(
+            extension
+        )
+    ) {
+
+        return "jpg";
+
+    }
+
+
+    return extension;
+
 }
 
 
-function formatNumber(value){
+/* =========================================================
+   18. NUMBER FORMAT
+========================================================= */
+
+function formatNumber(
+    value
+) {
 
     if (
         value === null ||
-        value === undefined
-    ){
+        value === undefined ||
+        value === ""
+    ) {
 
         return "-";
 
     }
 
 
-    return Number(value)
-        .toFixed(6);
+    const number =
+        Number(value);
+
+
+    if (
+        Number.isNaN(
+            number
+        )
+    ) {
+
+        return "-";
+
+    }
+
+
+    return number.toFixed(
+        6
+    );
 
 }
 
 
-function escapeHtml(value){
+/* =========================================================
+   19. HTML ESCAPE
+========================================================= */
+
+function escapeHtml(
+    value
+) {
 
     return String(value)
+
         .replaceAll(
             "&",
             "&amp;"
         )
+
         .replaceAll(
             "<",
             "&lt;"
         )
+
         .replaceAll(
             ">",
             "&gt;"
         )
+
         .replaceAll(
             '"',
             "&quot;"
         )
+
         .replaceAll(
             "'",
             "&#039;"
@@ -2232,15 +2939,28 @@ function escapeHtml(value){
 
 
 /* =========================================================
-   ERROR UI
-   ========================================================= */
+   20. SHOW CREATE ERROR
+========================================================= */
 
-function showCreateError(message){
+function showCreateError(
+    message
+) {
 
     const box =
         document.getElementById(
             "createError"
         );
+
+
+    if (!box) {
+
+        alert(
+            message
+        );
+
+        return;
+
+    }
 
 
     box.textContent =
@@ -2250,15 +2970,28 @@ function showCreateError(message){
     box.className =
         "alert error";
 
+
+    box.style.display =
+        "block";
+
 }
 
 
-function hideCreateError(){
+/* =========================================================
+   21. HIDE CREATE ERROR
+========================================================= */
+
+function hideCreateError() {
 
     const box =
         document.getElementById(
             "createError"
         );
+
+
+    if (!box) {
+        return;
+    }
 
 
     box.textContent =
@@ -2268,8 +3001,16 @@ function hideCreateError(){
     box.className =
         "alert";
 
+
+    box.style.display =
+        "none";
+
 }
 
+
+/* =========================================================
+   END
+========================================================= */
 </script>
 
 </body>
