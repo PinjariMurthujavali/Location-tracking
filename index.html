@@ -1,507 +1,995 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>GeoShare — Smart Image Sharing</title>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
-:root{
-    --bg:#070b17;
-    --card:#10172a;
-    --card2:#151d33;
-    --text:#f8fafc;
-    --muted:#94a3b8;
-    --primary:#6366f1;
-    --primary2:#8b5cf6;
-    --green:#22c55e;
-    --red:#ef4444;
-    --border:rgba(255,255,255,.09);
-}
-
-body{
-    min-height:100vh;
-    font-family:Inter,Arial,sans-serif;
-    background:
-        radial-gradient(circle at 10% 10%,rgba(99,102,241,.20),transparent 30%),
-        radial-gradient(circle at 90% 20%,rgba(139,92,246,.18),transparent 30%),
-        linear-gradient(135deg,#050816,#0b1020 50%,#080b15);
-    color:var(--text);
-}
-
-.container{
-    width:min(1180px,94%);
-    margin:auto;
-    padding:28px 0 60px;
-}
-
-/* HEADER */
-
-.header{
-    padding:28px;
-    border:1px solid var(--border);
-    border-radius:28px;
-    background:rgba(16,23,42,.78);
-    backdrop-filter:blur(18px);
-    box-shadow:0 25px 70px rgba(0,0,0,.35);
-    margin-bottom:24px;
-}
-
-.brand{
-    display:flex;
-    align-items:center;
-    gap:15px;
-}
-
-.logo{
-    width:55px;
-    height:55px;
-    border-radius:17px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:28px;
-    background:linear-gradient(135deg,var(--primary),var(--primary2));
-    box-shadow:0 10px 30px rgba(99,102,241,.35);
-}
-
-.header h1{
-    font-size:29px;
-}
-
-.header p{
-    margin-top:5px;
-    color:var(--muted);
-}
-
-/* CARDS */
-
-.card{
-    background:rgba(16,23,42,.86);
-    border:1px solid var(--border);
-    border-radius:24px;
-    padding:25px;
-    margin-bottom:24px;
-    box-shadow:0 20px 55px rgba(0,0,0,.25);
-    backdrop-filter:blur(15px);
-}
-
-.card-title{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:15px;
-    margin-bottom:22px;
-}
-
-.card-title h2{
-    font-size:20px;
-}
-
-.subtitle{
-    color:var(--muted);
-    font-size:13px;
-    margin-top:5px;
-}
-
-/* FORM */
-
-label{
-    display:block;
-    font-weight:700;
-    margin:17px 0 8px;
-}
-
-input[type="text"]{
-    width:100%;
-    padding:14px 15px;
-    border-radius:13px;
-    border:1px solid var(--border);
-    background:#080d1c;
-    color:white;
-    outline:none;
-    font-size:15px;
-}
-
-input[type="text"]:focus{
-    border-color:var(--primary);
-    box-shadow:0 0 0 3px rgba(99,102,241,.12);
-}
-
-.file-box{
-    border:2px dashed rgba(99,102,241,.35);
-    border-radius:18px;
-    padding:25px;
-    text-align:center;
-    cursor:pointer;
-    background:rgba(99,102,241,.05);
-    transition:.25s;
-}
-
-.file-box:hover{
-    border-color:var(--primary);
-    background:rgba(99,102,241,.09);
-}
-
-.file-box input{
-    width:100%;
-}
-
-.file-icon{
-    font-size:40px;
-    margin-bottom:8px;
-}
-
-.file-text{
-    color:var(--muted);
-    font-size:14px;
-}
-
-.preview{
-    width:100%;
-    max-height:420px;
-    object-fit:contain;
-    display:none;
-    margin-top:20px;
-    border-radius:18px;
-    background:#050816;
-    border:1px solid var(--border);
-}
-
-/* BUTTONS */
-
-button{
-    border:none;
-    cursor:pointer;
-    font-weight:800;
-    border-radius:13px;
-    transition:.2s;
-}
-
-button:hover{
-    transform:translateY(-1px);
-}
-
-button:disabled{
-    opacity:.55;
-    cursor:not-allowed;
-    transform:none;
-}
-
-.primary{
-    width:100%;
-    margin-top:20px;
-    padding:15px;
-    color:white;
-    font-size:15px;
-    background:linear-gradient(135deg,var(--primary),var(--primary2));
-    box-shadow:0 12px 30px rgba(99,102,241,.25);
-}
-
-.secondary{
-    padding:11px 16px;
-    color:white;
-    background:#1e293b;
-    border:1px solid var(--border);
-}
-
-.success{
-    background:rgba(34,197,94,.13);
-    color:#86efac;
-    border:1px solid rgba(34,197,94,.25);
-}
-
-.danger{
-    background:rgba(239,68,68,.12);
-    color:#fca5a5;
-}
-
-/* SHARE RESULT */
-
-.share-result{
-    display:none;
-    margin-top:20px;
-    padding:20px;
-    border-radius:18px;
-    background:linear-gradient(
-        135deg,
-        rgba(99,102,241,.12),
-        rgba(139,92,246,.08)
-    );
-    border:1px solid rgba(99,102,241,.25);
-}
-
-.success-title{
-    color:#a5b4fc;
-    font-weight:800;
-}
-
-.link-box{
-    margin-top:13px;
-    padding:13px;
-    border-radius:12px;
-    background:#070b17;
-    border:1px solid var(--border);
-    word-break:break-all;
-    color:#c7d2fe;
-    font-size:13px;
-}
-
-.actions{
-    display:flex;
-    gap:10px;
-    margin-top:12px;
-}
-
-.actions button{
-    flex:1;
-}
-
-/* STATS */
-
-.stats{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:15px;
-    margin-bottom:24px;
-}
-
-.stat{
-    padding:20px;
-    border-radius:18px;
-    background:rgba(16,23,42,.86);
-    border:1px solid var(--border);
-}
-
-.stat-icon{
-    font-size:25px;
-}
-
-.stat-number{
-    font-size:28px;
-    font-weight:900;
-    margin-top:8px;
-}
-
-.stat-label{
-    color:var(--muted);
-    font-size:13px;
-}
-
-/* TABLE */
-
-.table-wrap{
-    overflow:auto;
-    border:1px solid var(--border);
-    border-radius:15px;
-}
-
-table{
-    width:100%;
-    min-width:1150px;
-    border-collapse:collapse;
-}
-
-th,td{
-    padding:14px;
-    text-align:left;
-    border-bottom:1px solid var(--border);
-}
-
-th{
-    background:#0b1120;
-    color:#cbd5e1;
-    font-size:12px;
-    text-transform:uppercase;
-}
-
-td{
-    font-size:13px;
-    color:#e2e8f0;
-}
-
-tr:hover td{
-    background:rgba(255,255,255,.02);
-}
-
-.empty{
-    text-align:center;
-    padding:35px;
-    color:var(--muted);
-}
-
-/* VIEWER */
-
-.viewer{
-    display:none;
-}
-
-.viewer-card{
-    text-align:center;
-}
-
-.viewer-title{
-    font-size:27px;
-    margin-bottom:20px;
-}
-
-.viewer-image{
-    width:100%;
-    max-height:68vh;
-    object-fit:contain;
-    border-radius:20px;
-    background:#050816;
-    border:1px solid var(--border);
-}
-
-.permission{
-    margin-top:22px;
-    padding:23px;
-    border-radius:19px;
-    background:rgba(99,102,241,.07);
-    border:1px solid rgba(99,102,241,.2);
-}
-
-.permission h3{
-    margin-bottom:8px;
-}
-
-.permission p{
-    color:var(--muted);
-    font-size:14px;
-    line-height:1.6;
-}
-
-.location-btn{
-    max-width:360px;
-    margin-left:auto;
-    margin-right:auto;
-}
-
-.status{
-    margin-top:15px;
-    font-size:14px;
-    line-height:1.6;
-}
-
-.badge{
-    display:inline-block;
-    padding:8px 12px;
-    border-radius:999px;
-    background:rgba(34,197,94,.12);
-    color:#86efac;
-    border:1px solid rgba(34,197,94,.25);
-}
-
-/* LOCATION INFO */
-
-.location-preview{
-    display:none;
-    margin-top:20px;
-    text-align:left;
-    padding:18px;
-    border-radius:15px;
-    background:#080d1c;
-    border:1px solid var(--border);
-}
-
-.location-preview div{
-    padding:8px 0;
-    border-bottom:1px solid var(--border);
-}
-
-.location-preview div:last-child{
-    border-bottom:none;
-}
-
-.location-preview strong{
-    color:#a5b4fc;
-}
-
-/* ALERT */
-
-.alert{
-    display:none;
-    padding:14px 16px;
-    border-radius:13px;
-    margin-top:15px;
-    font-size:14px;
-    line-height:1.5;
-}
-
-.alert.error{
-    display:block;
-    background:rgba(239,68,68,.10);
-    color:#fca5a5;
-    border:1px solid rgba(239,68,68,.22);
-}
-
-.alert.info{
-    display:block;
-    background:rgba(59,130,246,.10);
-    color:#93c5fd;
-    border:1px solid rgba(59,130,246,.22);
-}
-
-/* HIDDEN */
-
-.hidden{
-    display:none!important;
-}
-
-/* MOBILE */
-
-@media(max-width:700px){
-
-    .container{
-        width:92%;
-        padding-top:15px;
-    }
-
-    .header{
-        padding:20px;
-        border-radius:20px;
-    }
-
-    .header h1{
-        font-size:23px;
-    }
-
-    .card{
-        padding:18px;
-        border-radius:19px;
-    }
-
-    .stats{
-        grid-template-columns:1fr;
-    }
-
-    .actions{
-        flex-direction:column;
-    }
-
-    .viewer-title{
-        font-size:22px;
-    }
-
-}
-</style>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>GeoShare</title>
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <style>
+
+        /* =====================================================
+           RESET
+        ===================================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        /* =====================================================
+           VARIABLES
+        ===================================================== */
+
+        :root {
+
+            --bg: #060914;
+
+            --card: #10162a;
+
+            --card2: #151d35;
+
+            --input: #080d1c;
+
+            --text: #f8fafc;
+
+            --muted: #94a3b8;
+
+            --border: rgba(255,255,255,.09);
+
+            --primary: #6366f1;
+
+            --primary2: #8b5cf6;
+
+            --success: #22c55e;
+
+            --danger: #ef4444;
+
+            --info: #3b82f6;
+
+        }
+
+
+        /* =====================================================
+           BODY
+        ===================================================== */
+
+        body {
+
+            min-height: 100vh;
+
+            font-family:
+                Inter,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Arial,
+                sans-serif;
+
+            color: var(--text);
+
+            background:
+
+                radial-gradient(
+                    circle at 10% 0%,
+                    rgba(99,102,241,.22),
+                    transparent 30%
+                ),
+
+                radial-gradient(
+                    circle at 100% 15%,
+                    rgba(139,92,246,.18),
+                    transparent 30%
+                ),
+
+                linear-gradient(
+                    135deg,
+                    #050816,
+                    #0a1020,
+                    #070a14
+                );
+
+        }
+
+
+        /* =====================================================
+           CONTAINER
+        ===================================================== */
+
+        .container {
+
+            width: min(1180px, 94%);
+
+            margin: auto;
+
+            padding:
+                25px
+                0
+                60px;
+
+        }
+
+
+        /* =====================================================
+           HEADER
+        ===================================================== */
+
+        .header {
+
+            padding: 25px;
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 26px;
+
+            background:
+                rgba(16,22,42,.82);
+
+            backdrop-filter:
+                blur(18px);
+
+            box-shadow:
+                0 25px 70px
+                rgba(0,0,0,.30);
+
+            margin-bottom: 23px;
+
+        }
+
+
+        .brand {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+
+        }
+
+
+        .logo {
+
+            width: 55px;
+
+            height: 55px;
+
+            border-radius: 17px;
+
+            display: grid;
+
+            place-items: center;
+
+            font-size: 28px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--primary),
+                    var(--primary2)
+                );
+
+            box-shadow:
+                0 12px 35px
+                rgba(99,102,241,.35);
+
+        }
+
+
+        .header h1 {
+
+            font-size: 28px;
+
+        }
+
+
+        .header p {
+
+            margin-top: 5px;
+
+            color: var(--muted);
+
+            font-size: 14px;
+
+        }
+
+
+        /* =====================================================
+           CARD
+        ===================================================== */
+
+        .card {
+
+            background:
+                rgba(16,22,42,.88);
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 23px;
+
+            padding: 24px;
+
+            margin-bottom: 22px;
+
+            box-shadow:
+                0 18px 55px
+                rgba(0,0,0,.22);
+
+            backdrop-filter:
+                blur(15px);
+
+        }
+
+
+        .card-head {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 15px;
+
+            margin-bottom: 20px;
+
+        }
+
+
+        .card-head h2 {
+
+            font-size: 20px;
+
+        }
+
+
+        .muted {
+
+            color: var(--muted);
+
+            font-size: 13px;
+
+            margin-top: 5px;
+
+        }
+
+
+        /* =====================================================
+           LABELS
+        ===================================================== */
+
+        label {
+
+            display: block;
+
+            font-weight: 750;
+
+            margin:
+                16px
+                0
+                8px;
+
+        }
+
+
+        /* =====================================================
+           INPUT
+        ===================================================== */
+
+        input[type="text"] {
+
+            width: 100%;
+
+            padding: 14px 15px;
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 13px;
+
+            background:
+                var(--input);
+
+            color: white;
+
+            outline: none;
+
+            font-size: 15px;
+
+        }
+
+
+        input[type="text"]:focus {
+
+            border-color:
+                var(--primary);
+
+            box-shadow:
+                0 0 0 3px
+                rgba(99,102,241,.12);
+
+        }
+
+
+        /* =====================================================
+           UPLOAD
+        ===================================================== */
+
+        .upload {
+
+            border:
+                2px dashed
+                rgba(99,102,241,.35);
+
+            border-radius: 18px;
+
+            padding: 28px;
+
+            text-align: center;
+
+            cursor: pointer;
+
+            background:
+                rgba(99,102,241,.045);
+
+            transition:
+                .2s;
+
+        }
+
+
+        .upload:hover {
+
+            border-color:
+                var(--primary);
+
+            background:
+                rgba(99,102,241,.08);
+
+        }
+
+
+        .upload-icon {
+
+            font-size: 40px;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .upload small {
+
+            color:
+                var(--muted);
+
+        }
+
+
+        /* =====================================================
+           PREVIEW
+        ===================================================== */
+
+        .preview {
+
+            display: none;
+
+            width: 100%;
+
+            max-height: 420px;
+
+            object-fit: contain;
+
+            margin-top: 18px;
+
+            border-radius: 18px;
+
+            background: #050816;
+
+            border:
+                1px solid
+                var(--border);
+
+        }
+
+
+        /* =====================================================
+           BUTTONS
+        ===================================================== */
+
+        button {
+
+            border: none;
+
+            border-radius: 13px;
+
+            padding:
+                13px
+                16px;
+
+            color: white;
+
+            font-weight: 800;
+
+            cursor: pointer;
+
+            transition:
+                .18s;
+
+        }
+
+
+        button:hover {
+
+            transform:
+                translateY(-1px);
+
+        }
+
+
+        button:disabled {
+
+            opacity: .55;
+
+            cursor:
+                not-allowed;
+
+            transform:
+                none;
+
+        }
+
+
+        .primary {
+
+            width: 100%;
+
+            margin-top: 19px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--primary),
+                    var(--primary2)
+                );
+
+            box-shadow:
+                0 12px 30px
+                rgba(99,102,241,.24);
+
+        }
+
+
+        .secondary {
+
+            background:
+                #1c2741;
+
+            border:
+                1px solid
+                var(--border);
+
+        }
+
+
+        .actions {
+
+            display: flex;
+
+            gap: 10px;
+
+            margin-top: 12px;
+
+        }
+
+
+        .actions button {
+
+            flex: 1;
+
+        }
+
+
+        /* =====================================================
+           ALERT
+        ===================================================== */
+
+        .alert {
+
+            display: none;
+
+            padding: 14px 16px;
+
+            border-radius: 13px;
+
+            margin-top: 15px;
+
+            font-size: 14px;
+
+            line-height: 1.5;
+
+        }
+
+
+        .alert.error {
+
+            display: block;
+
+            background:
+                rgba(239,68,68,.10);
+
+            color:
+                #fecaca;
+
+            border:
+                1px solid
+                rgba(239,68,68,.22);
+
+        }
+
+
+        .alert.success {
+
+            display: block;
+
+            background:
+                rgba(34,197,94,.10);
+
+            color:
+                #bbf7d0;
+
+            border:
+                1px solid
+                rgba(34,197,94,.22);
+
+        }
+
+
+        /* =====================================================
+           SHARE RESULT
+        ===================================================== */
+
+        .share-result {
+
+            display: none;
+
+            margin-top: 19px;
+
+            padding: 20px;
+
+            border-radius: 18px;
+
+            background:
+                rgba(99,102,241,.08);
+
+            border:
+                1px solid
+                rgba(99,102,241,.23);
+
+        }
+
+
+        .share-result-title {
+
+            color:
+                #c7d2fe;
+
+            font-weight: 850;
+
+        }
+
+
+        .share-link {
+
+            margin-top: 12px;
+
+            padding: 13px;
+
+            border-radius: 12px;
+
+            background:
+                #070b17;
+
+            border:
+                1px solid
+                var(--border);
+
+            color:
+                #c7d2fe;
+
+            font-size: 13px;
+
+            word-break:
+                break-all;
+
+        }
+
+
+        /* =====================================================
+           STATS
+        ===================================================== */
+
+        .stats {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3,1fr);
+
+            gap: 14px;
+
+            margin-bottom: 22px;
+
+        }
+
+
+        .stat {
+
+            padding: 20px;
+
+            border-radius: 18px;
+
+            background:
+                rgba(16,22,42,.88);
+
+            border:
+                1px solid
+                var(--border);
+
+        }
+
+
+        .stat-icon {
+
+            font-size: 25px;
+
+        }
+
+
+        .stat-number {
+
+            font-size: 29px;
+
+            font-weight: 900;
+
+            margin-top: 7px;
+
+        }
+
+
+        .stat-label {
+
+            color:
+                var(--muted);
+
+            font-size: 13px;
+
+        }
+
+
+        /* =====================================================
+           TABLE
+        ===================================================== */
+
+        .table-wrap {
+
+            overflow-x: auto;
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 15px;
+
+        }
+
+
+        table {
+
+            width: 100%;
+
+            min-width: 1200px;
+
+            border-collapse:
+                collapse;
+
+        }
+
+
+        th,
+        td {
+
+            padding: 14px;
+
+            text-align: left;
+
+            border-bottom:
+                1px solid
+                var(--border);
+
+        }
+
+
+        th {
+
+            background:
+                #0b1120;
+
+            color:
+                #cbd5e1;
+
+            font-size: 11px;
+
+            text-transform:
+                uppercase;
+
+        }
+
+
+        td {
+
+            font-size: 13px;
+
+            color:
+                #e2e8f0;
+
+        }
+
+
+        tr:hover td {
+
+            background:
+                rgba(255,255,255,.025);
+
+        }
+
+
+        .empty {
+
+            text-align: center;
+
+            padding: 32px;
+
+            color:
+                var(--muted);
+
+        }
+
+
+        /* =====================================================
+           VISITOR
+        ===================================================== */
+
+        .viewer {
+
+            display: none;
+
+        }
+
+
+        .viewer-title {
+
+            text-align: center;
+
+            font-size: 26px;
+
+            margin-bottom: 18px;
+
+        }
+
+
+        .viewer-image {
+
+            display: block;
+
+            width: 100%;
+
+            max-height: 70vh;
+
+            object-fit: contain;
+
+            border-radius: 20px;
+
+            background:
+                #050816;
+
+            border:
+                1px solid
+                var(--border);
+
+        }
+
+
+        .consent {
+
+            margin-top: 21px;
+
+            padding: 23px;
+
+            text-align: center;
+
+            border-radius: 19px;
+
+            background:
+                rgba(99,102,241,.065);
+
+            border:
+                1px solid
+                rgba(99,102,241,.20);
+
+        }
+
+
+        .consent h3 {
+
+            font-size: 20px;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .consent p {
+
+            max-width: 700px;
+
+            margin: auto;
+
+            color:
+                var(--muted);
+
+            font-size: 14px;
+
+            line-height: 1.65;
+
+        }
+
+
+        .location-button {
+
+            max-width: 380px;
+
+            margin-left: auto;
+
+            margin-right: auto;
+
+        }
+
+
+        .location-status {
+
+            margin-top: 14px;
+
+            color:
+                var(--muted);
+
+            font-size: 13px;
+
+            line-height: 1.5;
+
+        }
+
+
+        .visitor-success {
+
+            display: none;
+
+            margin-top: 14px;
+
+            color:
+                #86efac;
+
+            font-weight: 850;
+
+        }
+
+
+        /* =====================================================
+           HIDDEN
+        ===================================================== */
+
+        .hidden {
+
+            display: none !important;
+
+        }
+
+
+        /* =====================================================
+           MOBILE
+        ===================================================== */
+
+        @media(max-width:700px) {
+
+            .container {
+
+                width: 92%;
+
+                padding-top: 14px;
+
+            }
+
+
+            .header {
+
+                padding: 19px;
+
+                border-radius: 20px;
+
+            }
+
+
+            .header h1 {
+
+                font-size: 23px;
+
+            }
+
+
+            .card {
+
+                padding: 18px;
+
+                border-radius: 19px;
+
+            }
+
+
+            .stats {
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+
+            .actions {
+
+                flex-direction:
+                    column;
+
+            }
+
+
+            .viewer-title {
+
+                font-size: 22px;
+
+            }
+
+        }
+
+    </style>
+
 </head>
+
 
 <body>
 
+
 <div class="container">
 
-    <!-- HEADER -->
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
 
     <header class="header">
 
@@ -512,11 +1000,15 @@ tr:hover td{
             </div>
 
             <div>
-                <h1>GeoShare</h1>
+
+                <h1>
+                    GeoShare
+                </h1>
 
                 <p>
-                    Smart image sharing with consent-based location
+                    Smart image sharing with explicit location consent
                 </p>
+
             </div>
 
         </div>
@@ -524,26 +1016,36 @@ tr:hover td{
     </header>
 
 
-    <!-- ADMIN -->
+
+    <!-- =====================================================
+         ADMIN DASHBOARD
+    ====================================================== -->
 
     <main id="adminSection">
 
-        <!-- CREATE CARD -->
+
+        <!-- CREATE SHARE -->
 
         <section class="card">
 
-            <div class="card-title">
+            <div class="card-head">
 
                 <div>
-                    <h2>✨ Create Share Link</h2>
 
-                    <div class="subtitle">
-                        Upload an image and create a unique sharing link
+                    <h2>
+                        ✨ Create Share Link
+                    </h2>
+
+                    <div class="muted">
+                        Upload an image and generate a shareable link.
                     </div>
+
                 </div>
 
             </div>
 
+
+            <!-- TITLE -->
 
             <label for="title">
                 Image Title
@@ -553,32 +1055,35 @@ tr:hover td{
                 id="title"
                 type="text"
                 maxlength="120"
-                placeholder="Example: Event Photo"
+                placeholder="Example: Cute girl"
             >
 
+
+            <!-- FILE -->
 
             <label>
                 Select Image
             </label>
 
+
             <div
-                class="file-box"
+                class="upload"
                 onclick="document.getElementById('imageInput').click()"
             >
 
-                <div class="file-icon">
+                <div class="upload-icon">
                     🖼️
                 </div>
 
-                <div>
-                    <strong>
-                        Choose an image
-                    </strong>
-                </div>
+                <strong>
+                    Choose an image
+                </strong>
 
-                <div class="file-text">
-                    JPG, PNG, WEBP • Max 10MB
-                </div>
+                <br>
+
+                <small>
+                    JPG, PNG, WEBP, GIF • Maximum 10MB
+                </small>
 
                 <input
                     id="imageInput"
@@ -590,6 +1095,8 @@ tr:hover td{
             </div>
 
 
+            <!-- PREVIEW -->
+
             <img
                 id="preview"
                 class="preview"
@@ -597,11 +1104,15 @@ tr:hover td{
             >
 
 
+            <!-- ERROR -->
+
             <div
                 id="createError"
                 class="alert"
             ></div>
 
+
+            <!-- GENERATE -->
 
             <button
                 id="generateBtn"
@@ -619,13 +1130,16 @@ tr:hover td{
                 class="share-result"
             >
 
-                <div class="success-title">
+                <div class="share-result-title">
+
                     ✅ Share link created successfully
+
                 </div>
+
 
                 <div
                     id="shareLink"
-                    class="link-box"
+                    class="share-link"
                 ></div>
 
 
@@ -638,11 +1152,12 @@ tr:hover td{
                         📋 Copy Link
                     </button>
 
+
                     <button
                         class="secondary"
                         onclick="openShareLink()"
                     >
-                        ↗️ Open
+                        ↗️ Open Link
                     </button>
 
                 </div>
@@ -652,9 +1167,13 @@ tr:hover td{
         </section>
 
 
-        <!-- STATS -->
+
+        <!-- =================================================
+             STATS
+        ================================================== -->
 
         <div class="stats">
+
 
             <div class="stat">
 
@@ -718,19 +1237,27 @@ tr:hover td{
         </div>
 
 
-        <!-- TABLE -->
+
+        <!-- =================================================
+             LOCATION TABLE
+        ================================================== -->
 
         <section class="card">
 
-            <div class="card-title">
+            <div class="card-head">
 
                 <div>
-                    <h2>📊 Visitor Locations</h2>
 
-                    <div class="subtitle">
-                        Locations shared with explicit browser permission
+                    <h2>
+                        📊 Visitor Locations
+                    </h2>
+
+                    <div class="muted">
+                        Only visitors who explicitly allow location access appear here.
                     </div>
+
                 </div>
+
 
                 <button
                     class="secondary"
@@ -750,30 +1277,65 @@ tr:hover td{
 
                         <tr>
 
-                            <th>Title</th>
-                            <th>Latitude</th>
-                            <th>Longitude</th>
-                            <th>Accuracy</th>
-                            <th>Address</th>
-                            <th>City</th>
-                            <th>State</th>
-                            <th>Pincode</th>
-                            <th>Country</th>
-                            <th>Time</th>
+                            <th>
+                                Title
+                            </th>
+
+                            <th>
+                                Latitude
+                            </th>
+
+                            <th>
+                                Longitude
+                            </th>
+
+                            <th>
+                                Accuracy
+                            </th>
+
+                            <th>
+                                Address
+                            </th>
+
+                            <th>
+                                City
+                            </th>
+
+                            <th>
+                                State
+                            </th>
+
+                            <th>
+                                Pincode
+                            </th>
+
+                            <th>
+                                Country
+                            </th>
+
+                            <th>
+                                Time
+                            </th>
 
                         </tr>
 
                     </thead>
 
-                    <tbody id="locationTable">
+
+                    <tbody
+                        id="locationTable"
+                    >
 
                         <tr>
+
                             <td
                                 colspan="10"
                                 class="empty"
                             >
-                                Loading locations...
+                                Loading...
+
                             </td>
+
                         </tr>
 
                     </tbody>
@@ -787,19 +1349,23 @@ tr:hover td{
     </main>
 
 
-    <!-- VISITOR -->
+
+    <!-- =====================================================
+         VISITOR PAGE
+    ====================================================== -->
 
     <section
         id="viewerSection"
-        class="card viewer viewer-card"
+        class="card viewer"
     >
 
-        <h1
+
+        <h2
             id="viewerTitle"
             class="viewer-title"
         >
             Shared Image
-        </h1>
+        </h2>
 
 
         <img
@@ -809,23 +1375,27 @@ tr:hover td{
         >
 
 
-        <div class="permission">
+        <div class="consent">
+
 
             <h3>
                 📍 Share Your Location
             </h3>
 
+
             <p>
+
                 If you choose to share your location,
                 your browser will ask for permission.
-                Your location is saved only after you
-                explicitly allow access.
+                Your location is saved only after you explicitly
+                choose <b>Allow</b>.
+
             </p>
 
 
             <button
                 id="locationBtn"
-                class="primary location-btn"
+                class="primary location-button"
                 onclick="requestLocation()"
             >
                 📍 Allow Location
@@ -834,31 +1404,42 @@ tr:hover td{
 
             <div
                 id="locationStatus"
-                class="status"
+                class="location-status"
             ></div>
 
 
             <div
-                id="locationPreview"
-                class="location-preview"
-            ></div>
+                id="visitorSuccess"
+                class="visitor-success"
+            >
+                ✅ Location shared successfully.
+            </div>
+
 
         </div>
 
     </section>
 
+
 </div>
 
 
+
 <script>
-    /* =========================================================
-   GEOSHARE - COMPLETE JAVASCRIPT
-========================================================= */
 
 
 /* =========================================================
-   1. SUPABASE CONFIG
+   SUPABASE CONFIG
 ========================================================= */
+
+/*
+    IMPORTANT:
+
+    Replace only the Publishable Key.
+
+    DO NOT use sb_secret_...
+
+*/
 
 
 const SUPABASE_URL =
@@ -870,41 +1451,32 @@ const SUPABASE_ANON_KEY =
 
 
 
+
 /* =========================================================
-   2. SUPABASE CLIENT
+   SUPABASE CLIENT
 ========================================================= */
 
 let supabaseClient = null;
 
-try {
 
-    if (
-        SUPABASE_URL &&
-        SUPABASE_ANON_KEY &&
-        SUPABASE_ANON_KEY !==
-        "PASTE_YOUR_PUBLISHABLE_KEY_HERE"
-    ) {
+if (
+    SUPABASE_ANON_KEY &&
+    SUPABASE_ANON_KEY !==
+    "PASTE_YOUR_PUBLISHABLE_KEY_HERE"
+) {
 
-        supabaseClient =
-            window.supabase.createClient(
-                SUPABASE_URL,
-                SUPABASE_ANON_KEY
-            );
-
-    }
-
-} catch (error) {
-
-    console.error(
-        "Supabase initialization error:",
-        error
-    );
+    supabaseClient =
+        window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_ANON_KEY
+        );
 
 }
 
 
+
 /* =========================================================
-   3. GLOBAL VARIABLES
+   GLOBAL VARIABLES
 ========================================================= */
 
 let selectedFile = null;
@@ -914,83 +1486,65 @@ let currentShareId = null;
 let generatedShareUrl = "";
 
 
-/* =========================================================
-   4. READ URL PARAMETER
-========================================================= */
-
-const urlParams =
-    new URLSearchParams(
-        window.location.search
-    );
-
-const shareId =
-    urlParams.get("id");
-
 
 /* =========================================================
-   5. PAGE LOAD
+   PAGE INITIALIZATION
 ========================================================= */
 
 document.addEventListener(
     "DOMContentLoaded",
     async function () {
 
-        if (shareId) {
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
 
-            /*
-             * VISITOR PAGE
-             */
+
+        const id =
+            params.get("id");
+
+
+        /*
+            If ?id exists:
+
+            Visitor page
+        */
+
+        if (id) {
 
             currentShareId =
-                shareId;
+                id;
 
-            const adminSection =
-                document.getElementById(
+
+            document
+                .getElementById(
                     "adminSection"
-                );
+                )
+                .classList
+                .add("hidden");
 
-            const viewerSection =
-                document.getElementById(
+
+            document
+                .getElementById(
                     "viewerSection"
-                );
+                )
+                .style
+                .display = "block";
 
-            if (adminSection) {
-
-                adminSection.classList.add(
-                    "hidden"
-                );
-
-            }
-
-            if (viewerSection) {
-
-                viewerSection.style.display =
-                    "block";
-
-            }
 
             await loadSharedImage();
 
-        } else {
+        }
 
-            /*
-             * ADMIN / DASHBOARD PAGE
-             */
 
-            const adminSection =
-                document.getElementById(
-                    "adminSection"
-                );
+        /*
+            Otherwise:
 
-            if (adminSection) {
+            Admin page
+        */
 
-                adminSection.classList.remove(
-                    "hidden"
-                );
-
-            }
-
-            checkSupabase();
+        else {
 
             await loadDashboard();
 
@@ -1000,46 +1554,20 @@ document.addEventListener(
 );
 
 
-/* =========================================================
-   6. CHECK SUPABASE
-========================================================= */
-
-function checkSupabase() {
-
-    if (!supabaseClient) {
-
-        showCreateError(
-            "Supabase is not connected. " +
-            "Please add your Publishable Key."
-        );
-
-        return false;
-
-    }
-
-    return true;
-
-}
-
 
 /* =========================================================
-   7. IMAGE FILE SELECTION
+   IMAGE SELECTION
 ========================================================= */
 
-const imageInput =
-    document.getElementById(
-        "imageInput"
-    );
-
-
-if (imageInput) {
-
-    imageInput.addEventListener(
+document
+    .getElementById("imageInput")
+    .addEventListener(
         "change",
         function () {
 
             const file =
                 this.files[0];
+
 
             if (!file) {
 
@@ -1051,17 +1579,16 @@ if (imageInput) {
 
 
             /*
-             * CHECK IMAGE TYPE
-             */
+                IMAGE CHECK
+            */
 
             if (
-                !file.type.startsWith(
-                    "image/"
-                )
+                !file.type
+                    .startsWith("image/")
             ) {
 
                 showCreateError(
-                    "Please select a valid image file."
+                    "Please select a valid image."
                 );
 
                 this.value = "";
@@ -1074,8 +1601,8 @@ if (imageInput) {
 
 
             /*
-             * MAX 10 MB
-             */
+                SIZE CHECK
+            */
 
             if (
                 file.size >
@@ -1083,7 +1610,7 @@ if (imageInput) {
             ) {
 
                 showCreateError(
-                    "Image size must be less than 10MB."
+                    "Image must be smaller than 10MB."
                 );
 
                 this.value = "";
@@ -1098,12 +1625,13 @@ if (imageInput) {
             selectedFile =
                 file;
 
+
             hideCreateError();
 
 
             /*
-             * SHOW PREVIEW
-             */
+                PREVIEW
+            */
 
             const reader =
                 new FileReader();
@@ -1117,12 +1645,10 @@ if (imageInput) {
                             "preview"
                         );
 
-                    if (!preview) {
-                        return;
-                    }
 
                     preview.src =
                         event.target.result;
+
 
                     preview.style.display =
                         "block";
@@ -1137,23 +1663,27 @@ if (imageInput) {
         }
     );
 
-}
 
 
 /* =========================================================
-   8. CREATE SHARE LINK
+   CREATE SHARE
 ========================================================= */
 
 async function createShare() {
+
 
     hideCreateError();
 
 
     /*
-     * CHECK SUPABASE
-     */
+        SUPABASE CHECK
+    */
 
-    if (!checkSupabase()) {
+    if (!supabaseClient) {
+
+        showCreateError(
+            "Supabase is not connected. Please add your Publishable Key."
+        );
 
         return;
 
@@ -1161,24 +1691,15 @@ async function createShare() {
 
 
     /*
-     * GET TITLE
-     */
-
-    const titleInput =
-        document.getElementById(
-            "title"
-        );
-
+        TITLE
+    */
 
     const title =
-        titleInput
-            ? titleInput.value.trim()
-            : "";
+        document
+            .getElementById("title")
+            .value
+            .trim();
 
-
-    /*
-     * VALIDATE TITLE
-     */
 
     if (!title) {
 
@@ -1186,33 +1707,25 @@ async function createShare() {
             "Please enter an image title."
         );
 
-        if (titleInput) {
-            titleInput.focus();
-        }
-
         return;
 
     }
 
 
     /*
-     * VALIDATE IMAGE
-     */
+        IMAGE
+    */
 
     if (!selectedFile) {
 
         showCreateError(
-            "Please select an image first."
+            "Please select an image."
         );
 
         return;
 
     }
 
-
-    /*
-     * BUTTON
-     */
 
     const button =
         document.getElementById(
@@ -1220,29 +1733,28 @@ async function createShare() {
         );
 
 
-    if (button) {
+    button.disabled =
+        true;
 
-        button.disabled = true;
 
-        button.textContent =
-            "⏳ Uploading image...";
-
-    }
+    button.textContent =
+        "⏳ Uploading image...";
 
 
     try {
 
+
         /*
-         * UNIQUE SHARE ID
-         */
+            UNIQUE ID
+        */
 
         const id =
             crypto.randomUUID();
 
 
         /*
-         * FILE EXTENSION
-         */
+            EXTENSION
+        */
 
         const extension =
             getExtension(
@@ -1251,16 +1763,17 @@ async function createShare() {
 
 
         const filePath =
-            id + "." + extension;
+            id +
+            "." +
+            extension;
 
 
-        /*
-         * ---------------------------------------------
-         * UPLOAD IMAGE TO SUPABASE STORAGE
-         * ---------------------------------------------
-         */
 
-        const uploadResult =
+        /* =================================================
+           STORAGE UPLOAD
+        ================================================= */
+
+        const upload =
             await supabaseClient
                 .storage
                 .from("images")
@@ -1268,6 +1781,7 @@ async function createShare() {
                     filePath,
                     selectedFile,
                     {
+
                         cacheControl:
                             "3600",
 
@@ -1276,64 +1790,57 @@ async function createShare() {
 
                         upsert:
                             false
+
                     }
                 );
 
 
-        if (uploadResult.error) {
+        if (upload.error) {
 
             throw new Error(
                 "Image upload failed: " +
-                uploadResult.error.message
+                upload.error.message
             );
 
         }
 
 
-        if (button) {
 
-            button.textContent =
-                "⏳ Creating share...";
-
-        }
+        button.textContent =
+            "⏳ Creating share link...";
 
 
-        /*
-         * ---------------------------------------------
-         * GET PUBLIC IMAGE URL
-         * ---------------------------------------------
-         */
 
-        const publicUrlResult =
+        /* =================================================
+           PUBLIC IMAGE URL
+        ================================================= */
+
+        const publicUrl =
             supabaseClient
                 .storage
                 .from("images")
                 .getPublicUrl(
                     filePath
-                );
-
-
-        const imageUrl =
-            publicUrlResult.data
+                )
+                .data
                 .publicUrl;
 
 
-        if (!imageUrl) {
+        if (!publicUrl) {
 
             throw new Error(
-                "Could not generate public image URL."
+                "Could not create image URL."
             );
 
         }
 
 
-        /*
-         * ---------------------------------------------
-         * SAVE SHARE RECORD
-         * ---------------------------------------------
-         */
 
-        const shareResult =
+        /* =================================================
+           SAVE SHARE
+        ================================================= */
+
+        const saveShare =
             await supabaseClient
                 .from("shares")
                 .insert({
@@ -1345,116 +1852,92 @@ async function createShare() {
                         title,
 
                     image_url:
-                        imageUrl
+                        publicUrl
 
                 });
 
 
-        if (shareResult.error) {
+        if (saveShare.error) {
 
             throw new Error(
                 "Could not save share: " +
-                shareResult.error.message
+                saveShare.error.message
             );
 
         }
 
 
-        /*
-         * ---------------------------------------------
-         * GENERATE SHARE URL
-         * ---------------------------------------------
-         */
+
+        /* =================================================
+           CREATE READABLE LINK
+        ================================================= */
 
         generatedShareUrl =
             window.location.origin +
             window.location.pathname +
-            "?id=" +
-            encodeURIComponent(id);
+            "?share=" +
+            encodeURIComponent(
+                title
+            ) +
+            "&id=" +
+            encodeURIComponent(
+                id
+            );
 
 
-        /*
-         * SHOW LINK
-         */
 
-        const shareLink =
-            document.getElementById(
+        /* =================================================
+           SHOW LINK
+        ================================================= */
+
+        document
+            .getElementById(
                 "shareLink"
-            );
+            )
+            .textContent =
+            generatedShareUrl;
 
 
-        if (shareLink) {
-
-            shareLink.textContent =
-                generatedShareUrl;
-
-        }
-
-
-        const shareResultBox =
-            document.getElementById(
+        document
+            .getElementById(
                 "shareResult"
-            );
+            )
+            .style
+            .display =
+            "block";
 
 
-        if (shareResultBox) {
+        button.textContent =
+            "✅ Link Generated";
 
-            shareResultBox.style.display =
-                "block";
-
-        }
-
-
-        if (button) {
-
-            button.textContent =
-                "✅ Link Generated";
-
-        }
-
-
-        /*
-         * REFRESH DASHBOARD
-         */
 
         await loadDashboard();
 
 
-    } catch (error) {
+    }
+
+    catch (error) {
+
 
         console.error(
-            "Create share error:",
+            "CREATE SHARE ERROR:",
             error
         );
 
 
         showCreateError(
             error.message ||
-            "Something went wrong while creating the link."
+            "Something went wrong."
         );
 
 
-        if (button) {
-
-            button.disabled =
-                false;
-
-            button.textContent =
-                "🔗 Generate Share Link";
-
-        }
-
-
-        return;
+        button.textContent =
+            "🔗 Generate Share Link";
 
     }
 
 
-    /*
-     * KEEP BUTTON ENABLED
-     */
-
-    if (button) {
+    finally {
 
         button.disabled =
             false;
@@ -1464,32 +1947,34 @@ async function createShare() {
 }
 
 
+
 /* =========================================================
-   9. COPY SHARE LINK
+   COPY SHARE LINK
 ========================================================= */
 
 async function copyShareLink() {
 
-    const linkElement =
+
+    const element =
         document.getElementById(
             "shareLink"
         );
 
 
-    if (!linkElement) {
+    if (!element) {
+
         return;
+
     }
 
 
     const link =
-        linkElement.textContent.trim();
+        element
+            .textContent
+            .trim();
 
 
     if (!link) {
-
-        alert(
-            "Share link is not available."
-        );
 
         return;
 
@@ -1498,9 +1983,12 @@ async function copyShareLink() {
 
     try {
 
-        await navigator.clipboard.writeText(
-            link
-        );
+
+        await navigator
+            .clipboard
+            .writeText(
+                link
+            );
 
 
         alert(
@@ -1508,37 +1996,41 @@ async function copyShareLink() {
         );
 
 
-    } catch (error) {
+    }
 
-        console.error(
-            "Copy error:",
-            error
-        );
+    catch {
 
 
         /*
-         * FALLBACK
-         */
+            FALLBACK
+        */
 
-        const temp =
+        const textarea =
             document.createElement(
                 "textarea"
             );
 
-        temp.value =
+
+        textarea.value =
             link;
 
-        document.body.appendChild(
-            temp
-        );
 
-        temp.select();
+        document
+            .body
+            .appendChild(
+                textarea
+            );
+
+
+        textarea.select();
+
 
         document.execCommand(
             "copy"
         );
 
-        temp.remove();
+
+        textarea.remove();
 
 
         alert(
@@ -1550,112 +2042,96 @@ async function copyShareLink() {
 }
 
 
+
 /* =========================================================
-   10. OPEN SHARE LINK
+   OPEN SHARE LINK
 ========================================================= */
 
 function openShareLink() {
 
-    const linkElement =
+
+    const element =
         document.getElementById(
             "shareLink"
         );
 
 
-    if (!linkElement) {
+    if (!element) {
+
         return;
+
     }
 
 
     const link =
-        linkElement.textContent.trim();
+        element
+            .textContent
+            .trim();
 
 
-    if (!link) {
+    if (link) {
 
-        alert(
-            "Share link is not available."
+        window.open(
+            link,
+            "_blank"
         );
 
-        return;
-
     }
-
-
-    window.open(
-        link,
-        "_blank"
-    );
 
 }
 
 
+
 /* =========================================================
-   11. LOAD SHARED IMAGE
+   LOAD SHARED IMAGE
 ========================================================= */
 
 async function loadSharedImage() {
 
-    const titleElement =
+
+    const title =
         document.getElementById(
             "viewerTitle"
         );
 
-    const imageElement =
+
+    const image =
         document.getElementById(
             "viewerImage"
         );
 
-    const statusElement =
+
+    const status =
         document.getElementById(
             "locationStatus"
         );
 
 
+    /*
+        CONFIG CHECK
+    */
+
     if (!supabaseClient) {
 
-        if (titleElement) {
+        title.textContent =
+            "Configuration Error";
 
-            titleElement.textContent =
-                "Configuration Error";
 
-        }
+        status.textContent =
+            "Supabase Publishable Key is missing.";
 
-        if (statusElement) {
-
-            statusElement.textContent =
-                "Supabase configuration is missing.";
-
-        }
 
         return;
 
     }
 
 
-    if (!currentShareId) {
-
-        if (statusElement) {
-
-            statusElement.textContent =
-                "Invalid share link.";
-
-        }
-
-        return;
-
-    }
-
-
-    if (statusElement) {
-
-        statusElement.textContent =
-            "Loading image...";
-
-    }
+    status.textContent =
+        "Loading image...";
 
 
     try {
+
 
         const result =
             await supabaseClient
@@ -1679,19 +2155,13 @@ async function loadSharedImage() {
 
         if (!result.data) {
 
-            if (titleElement) {
+            title.textContent =
+                "Image Not Found";
 
-                titleElement.textContent =
-                    "Image Not Found";
 
-            }
+            status.textContent =
+                "This share link is invalid.";
 
-            if (statusElement) {
-
-                statusElement.textContent =
-                    "This share link is invalid.";
-
-            }
 
             return;
 
@@ -1699,76 +2169,61 @@ async function loadSharedImage() {
 
 
         /*
-         * TITLE
-         */
+            TITLE
+        */
 
-        if (titleElement) {
-
-            titleElement.textContent =
-                result.data.title;
-
-        }
+        title.textContent =
+            result.data.title;
 
 
         /*
-         * IMAGE
-         */
+            IMAGE
+        */
 
-        if (imageElement) {
-
-            imageElement.src =
-                result.data.image_url;
-
-        }
+        image.src =
+            result.data.image_url;
 
 
-        if (statusElement) {
+        status.textContent =
+            "Image loaded. Location sharing is optional.";
 
-            statusElement.textContent =
-                "Image loaded. You can choose to share your location.";
-
-        }
+    }
 
 
-    } catch (error) {
+    catch (error) {
+
 
         console.error(
-            "Load image error:",
+            "LOAD IMAGE ERROR:",
             error
         );
 
 
-        if (titleElement) {
-
-            titleElement.textContent =
-                "Unable to Load Image";
-
-        }
+        title.textContent =
+            "Unable to Load Image";
 
 
-        if (statusElement) {
-
-            statusElement.textContent =
-                error.message ||
-                "Something went wrong.";
-
-        }
+        status.textContent =
+            "Could not load this image.";
 
     }
 
 }
 
 
+
 /* =========================================================
-   12. REQUEST LOCATION
+   LOCATION PERMISSION
 ========================================================= */
 
 function requestLocation() {
+
 
     const button =
         document.getElementById(
             "locationBtn"
         );
+
 
     const status =
         document.getElementById(
@@ -1777,17 +2232,13 @@ function requestLocation() {
 
 
     /*
-     * CHECK SUPABASE
-     */
+        SUPABASE
+    */
 
     if (!supabaseClient) {
 
-        if (status) {
-
-            status.textContent =
-                "❌ Supabase configuration is missing.";
-
-        }
+        status.textContent =
+            "❌ Supabase configuration is missing.";
 
         return;
 
@@ -1795,17 +2246,13 @@ function requestLocation() {
 
 
     /*
-     * CHECK SHARE ID
-     */
+        SHARE ID
+    */
 
     if (!currentShareId) {
 
-        if (status) {
-
-            status.textContent =
-                "❌ Invalid share link.";
-
-        }
+        status.textContent =
+            "❌ Invalid share link.";
 
         return;
 
@@ -1813,324 +2260,300 @@ function requestLocation() {
 
 
     /*
-     * CHECK GEOLOCATION
-     */
+        GEOLOCATION
+    */
 
-    if (!navigator.geolocation) {
-
-        if (status) {
-
-            status.textContent =
-                "❌ Your browser does not support location.";
-
-        }
-
-        return;
-
-    }
-
-
-    /*
-     * LOADING
-     */
-
-    if (button) {
-
-        button.disabled =
-            true;
-
-        button.textContent =
-            "📍 Requesting permission...";
-
-    }
-
-
-    if (status) {
+    if (
+        !navigator.geolocation
+    ) {
 
         status.textContent =
-            "Please allow location access in your browser.";
+            "❌ Your browser does not support location.";
+
+        return;
 
     }
 
 
     /*
-     * GET LOCATION
-     */
+        LOADING
+    */
 
-    navigator.geolocation.getCurrentPosition(
-
-        async function(position) {
-
-            /*
-             * GPS
-             */
-
-            const latitude =
-                position.coords.latitude;
-
-            const longitude =
-                position.coords.longitude;
-
-            const accuracy =
-                position.coords.accuracy;
+    button.disabled =
+        true;
 
 
-            if (status) {
-
-                status.textContent =
-                    "✅ Location received. Finding address...";
-
-            }
+    button.textContent =
+        "📍 Requesting permission...";
 
 
-            try {
-
-                /*
-                 * -------------------------------------
-                 * REVERSE GEOCODING
-                 * -------------------------------------
-                 */
-
-                const location =
-                    await reverseGeocode(
-                        latitude,
-                        longitude
-                    );
+    status.textContent =
+        "Please allow location access in your browser.";
 
 
-                if (status) {
 
-                    status.textContent =
-                        "💾 Saving location...";
+    /* =====================================================
+       BROWSER GEOLOCATION
+    ===================================================== */
 
-                }
+    navigator
+        .geolocation
+        .getCurrentPosition(
+
+            async function(position) {
 
 
                 /*
-                 * -------------------------------------
-                 * EXACT VISIT TIME
-                 * -------------------------------------
-                 */
+                    GPS DATA
+                */
+
+                const latitude =
+                    position
+                        .coords
+                        .latitude;
+
+
+                const longitude =
+                    position
+                        .coords
+                        .longitude;
+
+
+                const accuracy =
+                    position
+                        .coords
+                        .accuracy;
+
+
+                /*
+                    TIME
+                */
 
                 const visitedAt =
                     new Date()
                         .toISOString();
 
 
-                /*
-                 * -------------------------------------
-                 * SAVE LOCATION
-                 * -------------------------------------
-                 */
+                status.textContent =
+                    "✅ Permission granted. Finding address...";
 
-                const saveResult =
-                    await supabaseClient
-                        .from(
-                            "visitor_locations"
+
+                try {
+
+
+                    /* =====================================
+                       REVERSE GEOCODING
+                    ===================================== */
+
+                    const location =
+                        await reverseGeocode(
+                            latitude,
+                            longitude
+                        );
+
+
+                    status.textContent =
+                        "💾 Saving location...";
+
+
+
+                    /* =====================================
+                       DATABASE
+                    ===================================== */
+
+                    const save =
+                        await supabaseClient
+                            .from(
+                                "visitor_locations"
+                            )
+                            .insert({
+
+                                share_id:
+                                    currentShareId,
+
+                                latitude:
+                                    latitude,
+
+                                longitude:
+                                    longitude,
+
+                                accuracy:
+                                    accuracy,
+
+                                address:
+                                    location.address ||
+                                    "",
+
+                                city:
+                                    location.city ||
+                                    "",
+
+                                state:
+                                    location.state ||
+                                    "",
+
+                                postcode:
+                                    location.postcode ||
+                                    "",
+
+                                country:
+                                    location.country ||
+                                    "",
+
+                                visited_at:
+                                    visitedAt
+
+                            });
+
+
+                    if (save.error) {
+
+                        throw save.error;
+
+                    }
+
+
+
+                    /*
+                        VISITOR ONLY SEES
+                        SUCCESS MESSAGE
+
+                        NO:
+                        latitude
+                        longitude
+                        address
+                        pincode
+                        time
+                    */
+
+                    status.textContent =
+                        "";
+
+
+                    document
+                        .getElementById(
+                            "visitorSuccess"
                         )
-                        .insert({
+                        .style
+                        .display =
+                        "block";
 
-                            share_id:
-                                currentShareId,
-
-                            latitude:
-                                latitude,
-
-                            longitude:
-                                longitude,
-
-                            accuracy:
-                                accuracy,
-
-                            address:
-                                location.address ||
-                                "",
-
-                            city:
-                                location.city ||
-                                "",
-
-                            state:
-                                location.state ||
-                                "",
-
-                            postcode:
-                                location.postcode ||
-                                "",
-
-                            country:
-                                location.country ||
-                                "",
-
-                            visited_at:
-                                visitedAt
-
-                        });
-
-
-                if (saveResult.error) {
-
-                    throw saveResult.error;
-
-                }
-
-
-                /*
-                 * -------------------------------------
-                 * SUCCESS
-                 * -------------------------------------
-                 */
-
-                if (status) {
-
-                    status.innerHTML =
-                        `
-                        <span class="badge">
-                            ✅ Location shared successfully
-                        </span>
-                        `;
-
-                }
-
-
-                if (button) {
 
                     button.textContent =
                         "✅ Location Shared";
 
+
                 }
 
 
-                /*
-                 * SHOW DETAILS
-                 */
-
-                showLocationPreview(
-                    latitude,
-                    longitude,
-                    accuracy,
-                    location,
-                    visitedAt
-                );
+                catch (error) {
 
 
-            } catch (error) {
+                    console.error(
+                        "LOCATION SAVE ERROR:",
+                        error
+                    );
 
-                console.error(
-                    "Location save error:",
-                    error
-                );
-
-
-                if (status) {
 
                     status.textContent =
-                        "❌ Location received but could not be saved: " +
-                        error.message;
+                        "❌ Location could not be saved. Please try again.";
 
-                }
-
-
-                if (button) {
 
                     button.disabled =
                         false;
+
 
                     button.textContent =
                         "📍 Try Again";
 
                 }
 
-            }
-
-        },
+            },
 
 
-        /*
-         * -------------------------------------
-         * LOCATION ERROR
-         * -------------------------------------
-         */
+            /* =================================================
+               GEOLOCATION ERROR
+            ================================================= */
 
-        function(error) {
-
-            console.error(
-                "Geolocation error:",
-                error
-            );
+            function(error) {
 
 
-            if (status) {
+                console.error(
+                    "GEOLOCATION ERROR:",
+                    error
+                );
 
-                if (error.code === 1) {
+
+                if (
+                    error.code === 1
+                ) {
 
                     status.textContent =
-                        "❌ Location permission denied. No location was saved.";
+                        "Location permission was denied. No location was saved.";
 
                 }
 
-                else if (error.code === 2) {
+                else if (
+                    error.code === 2
+                ) {
 
                     status.textContent =
-                        "❌ Location is unavailable.";
+                        "Location is unavailable.";
 
                 }
 
-                else if (error.code === 3) {
+                else if (
+                    error.code === 3
+                ) {
 
                     status.textContent =
-                        "❌ Location request timed out.";
+                        "Location request timed out.";
 
                 }
 
                 else {
 
                     status.textContent =
-                        "❌ Unable to get your location.";
+                        "Unable to get location.";
 
                 }
 
-            }
-
-
-            if (button) {
 
                 button.disabled =
                     false;
 
+
                 button.textContent =
                     "📍 Allow Location";
 
+            },
+
+
+            /* =================================================
+               GPS OPTIONS
+            ================================================= */
+
+            {
+
+                enableHighAccuracy:
+                    true,
+
+                timeout:
+                    20000,
+
+                maximumAge:
+                    0
+
             }
 
-        },
-
-
-        /*
-         * -------------------------------------
-         * GPS OPTIONS
-         * -------------------------------------
-         */
-
-        {
-            enableHighAccuracy:
-                true,
-
-            timeout:
-                20000,
-
-            maximumAge:
-                0
-
-        }
-
-    );
+        );
 
 }
 
 
+
 /* =========================================================
-   13. REVERSE GEOCODING
+   REVERSE GEOCODING
 ========================================================= */
 
 async function reverseGeocode(
@@ -2138,19 +2561,30 @@ async function reverseGeocode(
     longitude
 ) {
 
+
     /*
-     * OpenStreetMap Nominatim
-     */
+        OpenStreetMap Nominatim
+    */
 
     const url =
         "https://nominatim.openstreetmap.org/reverse" +
+
         "?format=jsonv2" +
+
         "&lat=" +
-        encodeURIComponent(latitude) +
+        encodeURIComponent(
+            latitude
+        ) +
+
         "&lon=" +
-        encodeURIComponent(longitude) +
+        encodeURIComponent(
+            longitude
+        ) +
+
         "&addressdetails=1" +
+
         "&zoom=18";
+
 
 
     const response =
@@ -2172,84 +2606,100 @@ async function reverseGeocode(
         await response.json();
 
 
-    const addressData =
-        data.address || {};
+    const a =
+        data.address ||
+        {};
 
 
-    /*
-     * CITY
-     */
+
+    /* =====================================================
+       CITY
+    ===================================================== */
 
     const city =
-        addressData.city ||
-        addressData.town ||
-        addressData.village ||
-        addressData.municipality ||
-        addressData.suburb ||
+        a.city ||
+        a.town ||
+        a.village ||
+        a.municipality ||
+        a.suburb ||
         "";
 
 
-    /*
-     * STATE
-     */
+
+    /* =====================================================
+       STATE
+    ===================================================== */
 
     const state =
-        addressData.state ||
-        addressData.state_district ||
+        a.state ||
+        a.state_district ||
         "";
 
 
-    /*
-     * PINCODE
-     */
+
+    /* =====================================================
+       PINCODE
+    ===================================================== */
 
     let postcode =
-        addressData.postcode ||
+        a.postcode ||
         "";
 
 
-    /*
-     * COUNTRY
-     */
+
+    /* =====================================================
+       COUNTRY
+    ===================================================== */
 
     const country =
-        addressData.country ||
+        a.country ||
         "";
 
 
-    /*
-     * FULL ADDRESS
-     */
+
+    /* =====================================================
+       FULL ADDRESS
+    ===================================================== */
 
     const address =
         data.display_name ||
+
         [
-            addressData.house_number,
-            addressData.road,
-            addressData.neighbourhood,
-            addressData.suburb,
+
+            a.house_number,
+
+            a.road,
+
+            a.neighbourhood,
+
+            a.suburb,
+
             city,
+
             state,
+
             postcode,
+
             country
+
         ]
+
         .filter(Boolean)
+
         .join(", ");
 
 
+
     /*
-     * INDIA PINCODE FALLBACK
-     *
-     * If postcode field is missing,
-     * try extracting a 6 digit Indian PIN
-     * from display_name.
-     */
+        INDIA PINCODE FALLBACK
+    */
 
     if (
         !postcode &&
         country.toLowerCase() ===
         "india"
     ) {
+
 
         const match =
             String(address)
@@ -2266,6 +2716,7 @@ async function reverseGeocode(
         }
 
     }
+
 
 
     return {
@@ -2290,178 +2741,120 @@ async function reverseGeocode(
 }
 
 
-/* =========================================================
-   14. SHOW LOCATION DETAILS
-========================================================= */
-
-function showLocationPreview(
-    latitude,
-    longitude,
-    accuracy,
-    location,
-    visitedAt
-) {
-
-    const box =
-        document.getElementById(
-            "locationPreview"
-        );
-
-
-    if (!box) {
-        return;
-    }
-
-
-    box.style.display =
-        "block";
-
-
-    /*
-     * FORMAT TIME
-     */
-
-    let displayTime =
-        "-";
-
-
-    if (visitedAt) {
-
-        displayTime =
-            new Date(
-                visitedAt
-            ).toLocaleString();
-
-    }
-
-
-    box.innerHTML =
-        `
-
-        <div>
-            <strong>📍 Latitude:</strong>
-            ${Number(latitude).toFixed(6)}
-        </div>
-
-        <div>
-            <strong>📍 Longitude:</strong>
-            ${Number(longitude).toFixed(6)}
-        </div>
-
-        <div>
-            <strong>🎯 Accuracy:</strong>
-            ${accuracy
-                ? Math.round(accuracy) + " meters"
-                : "-"
-            }
-        </div>
-
-        <div>
-            <strong>🏠 Address:</strong>
-            ${escapeHtml(
-                location.address || "-"
-            )}
-        </div>
-
-        <div>
-            <strong>🏙️ City:</strong>
-            ${escapeHtml(
-                location.city || "-"
-            )}
-        </div>
-
-        <div>
-            <strong>📌 State:</strong>
-            ${escapeHtml(
-                location.state || "-"
-            )}
-        </div>
-
-        <div>
-            <strong>📮 Pincode:</strong>
-            ${escapeHtml(
-                location.postcode || "-"
-            )}
-        </div>
-
-        <div>
-            <strong>🌎 Country:</strong>
-            ${escapeHtml(
-                location.country || "-"
-            )}
-        </div>
-
-        <div>
-            <strong>🕒 Time:</strong>
-            ${escapeHtml(
-                displayTime
-            )}
-        </div>
-
-        `;
-
-}
-
 
 /* =========================================================
-   15. LOAD DASHBOARD
+   DASHBOARD
 ========================================================= */
 
 async function loadDashboard() {
 
+
     if (!supabaseClient) {
+
+
+        document
+            .getElementById(
+                "shareCount"
+            )
+            .textContent =
+            "—";
+
+
+        document
+            .getElementById(
+                "visitorCount"
+            )
+            .textContent =
+            "—";
+
+
+        document
+            .getElementById(
+                "cityCount"
+            )
+            .textContent =
+            "—";
+
+
+        document
+            .getElementById(
+                "locationTable"
+            )
+            .innerHTML =
+
+            `
+
+            <tr>
+
+                <td
+                    colspan="10"
+                    class="empty"
+                >
+
+                    Add your Supabase Publishable Key.
+
+                </td>
+
+            </tr>
+
+            `;
+
+
         return;
+
     }
 
 
     try {
 
-        /*
-         * SHARES COUNT
-         */
 
-        const sharesResult =
+        /*
+            SHARE COUNT
+        */
+
+        const shares =
             await supabaseClient
                 .from("shares")
                 .select(
                     "id",
                     {
+
                         count:
                             "exact",
+
                         head:
                             true
+
                     }
                 );
 
 
-        const shareCountElement =
-            document.getElementById(
-                "shareCount"
-            );
+        if (!shares.error) {
 
-
-        if (
-            shareCountElement &&
-            !sharesResult.error
-        ) {
-
-            shareCountElement.textContent =
-                sharesResult.count || 0;
+            document
+                .getElementById(
+                    "shareCount"
+                )
+                .textContent =
+                shares.count ||
+                0;
 
         }
 
 
         /*
-         * LOCATION TABLE
-         */
+            LOCATIONS
+        */
 
         await loadLocations();
 
+    }
 
-    } catch (error) {
+
+    catch (error) {
 
         console.error(
-            "Dashboard error:",
+            "DASHBOARD ERROR:",
             error
         );
 
@@ -2470,11 +2863,13 @@ async function loadDashboard() {
 }
 
 
+
 /* =========================================================
-   16. LOAD LOCATION TABLE
+   LOCATION TABLE
 ========================================================= */
 
 async function loadLocations() {
+
 
     const table =
         document.getElementById(
@@ -2482,24 +2877,7 @@ async function loadLocations() {
         );
 
 
-    if (!table) {
-        return;
-    }
-
-
     if (!supabaseClient) {
-
-        table.innerHTML =
-            `
-            <tr>
-                <td
-                    colspan="10"
-                    class="empty"
-                >
-                    Supabase configuration missing.
-                </td>
-            </tr>
-            `;
 
         return;
 
@@ -2507,29 +2885,27 @@ async function loadLocations() {
 
 
     table.innerHTML =
+
         `
+
         <tr>
+
             <td
                 colspan="10"
                 class="empty"
             >
-                Loading locations...
+
+                Loading visitor locations...
+
             </td>
+
         </tr>
+
         `;
 
 
     try {
 
-        /*
-         * FETCH LOCATIONS
-         *
-         * Foreign key:
-         *
-         * visitor_locations.share_id
-         *             ↓
-         * shares.id
-         */
 
         const result =
             await supabaseClient
@@ -2537,23 +2913,41 @@ async function loadLocations() {
                     "visitor_locations"
                 )
                 .select(
+
                     `
+
                     id,
+
                     share_id,
+
                     latitude,
+
                     longitude,
+
                     accuracy,
+
                     address,
+
                     city,
+
                     state,
+
                     postcode,
+
                     country,
+
                     visited_at,
+
                     shares (
+
                         title
+
                     )
+
                     `
+
                 )
+
                 .order(
                     "visited_at",
                     {
@@ -2571,41 +2965,38 @@ async function loadLocations() {
 
 
         const rows =
-            result.data || [];
+            result.data ||
+            [];
 
 
         /*
-         * VISITOR COUNT
-         */
+            VISITOR COUNT
+        */
 
-        const visitorCount =
-            document.getElementById(
+        document
+            .getElementById(
                 "visitorCount"
-            );
-
-
-        if (visitorCount) {
-
-            visitorCount.textContent =
-                rows.length;
-
-        }
+            )
+            .textContent =
+            rows.length;
 
 
         /*
-         * CITY COUNT
-         */
+            CITY COUNT
+        */
 
-        const citySet =
+        const cities =
             new Set();
 
 
         rows.forEach(
             function(row) {
 
-                if (row.city) {
+                if (
+                    row.city
+                ) {
 
-                    citySet.add(
+                    cities.add(
                         row.city
                     );
 
@@ -2615,177 +3006,234 @@ async function loadLocations() {
         );
 
 
-        const cityCount =
-            document.getElementById(
+        document
+            .getElementById(
                 "cityCount"
-            );
-
-
-        if (cityCount) {
-
-            cityCount.textContent =
-                citySet.size;
-
-        }
+            )
+            .textContent =
+            cities.size;
 
 
         /*
-         * EMPTY
-         */
+            EMPTY
+        */
 
-        if (rows.length === 0) {
+        if (
+            rows.length ===
+            0
+        ) {
 
             table.innerHTML =
+
                 `
+
                 <tr>
+
                     <td
                         colspan="10"
                         class="empty"
                     >
+
                         📍 No consented visitor locations yet.
+
                     </td>
+
                 </tr>
+
                 `;
+
 
             return;
 
         }
 
 
+
         /*
-         * BUILD TABLE
-         */
+            BUILD ROWS
+        */
 
         table.innerHTML =
+
             rows
                 .map(
                     function(row) {
 
+
                         const title =
                             row.shares &&
                             row.shares.title
+
                                 ? row.shares.title
+
                                 : "Unknown";
 
 
                         const time =
                             row.visited_at
+
                                 ? new Date(
                                     row.visited_at
-                                  ).toLocaleString()
+                                  )
+                                  .toLocaleString()
+
                                 : "-";
 
 
                         const accuracy =
-                            row.accuracy !==
-                            null &&
-                            row.accuracy !==
-                            undefined
+                            row.accuracy != null
+
                                 ? Math.round(
                                     row.accuracy
-                                  ) + " m"
+                                  ) +
+                                  " m"
+
                                 : "-";
 
 
                         return `
+
                         <tr>
 
                             <td>
+
                                 <strong>
+
                                     ${escapeHtml(
                                         title
                                     )}
+
                                 </strong>
+
                             </td>
 
+
                             <td>
+
                                 ${formatNumber(
                                     row.latitude
                                 )}
+
                             </td>
 
+
                             <td>
+
                                 ${formatNumber(
                                     row.longitude
                                 )}
+
                             </td>
 
+
                             <td>
+
                                 ${escapeHtml(
                                     accuracy
                                 )}
+
                             </td>
 
+
                             <td>
+
                                 ${escapeHtml(
                                     row.address ||
                                     "-"
                                 )}
+
                             </td>
 
+
                             <td>
+
                                 ${escapeHtml(
                                     row.city ||
                                     "-"
                                 )}
+
                             </td>
 
+
                             <td>
+
                                 ${escapeHtml(
                                     row.state ||
                                     "-"
                                 )}
+
                             </td>
 
+
                             <td>
+
                                 ${escapeHtml(
                                     row.postcode ||
                                     "-"
                                 )}
+
                             </td>
 
+
                             <td>
+
                                 ${escapeHtml(
                                     row.country ||
                                     "-"
                                 )}
+
                             </td>
 
+
                             <td>
+
                                 ${escapeHtml(
                                     time
                                 )}
+
                             </td>
 
                         </tr>
+
                         `;
 
                     }
                 )
                 .join("");
 
+    }
 
-    } catch (error) {
+
+    catch (error) {
+
 
         console.error(
-            "Location table error:",
+            "LOCATION TABLE ERROR:",
             error
         );
 
 
         table.innerHTML =
+
             `
+
             <tr>
+
                 <td
                     colspan="10"
                     class="empty"
                 >
-                    ❌ ${escapeHtml(
+
+                    ❌
+                    ${escapeHtml(
                         error.message ||
                         "Could not load locations."
                     )}
+
                 </td>
+
             </tr>
+
             `;
 
     }
@@ -2793,79 +3241,63 @@ async function loadLocations() {
 }
 
 
+
 /* =========================================================
-   17. GET FILE EXTENSION
+   FILE EXTENSION
 ========================================================= */
 
 function getExtension(
     filename
 ) {
 
-    const parts =
+
+    const extension =
         String(filename)
-            .split(".");
-
-
-    if (
-        parts.length <
-        2
-    ) {
-
-        return "jpg";
-
-    }
-
-
-    let extension =
-        parts
+            .split(".")
             .pop()
             .toLowerCase();
 
 
-    extension =
-        extension.replace(
-            /[^a-z0-9]/g,
-            ""
-        );
+    const allowed = [
 
+        "jpg",
 
-    /*
-     * SAFETY
-     */
+        "jpeg",
 
-    const allowed =
-        [
-            "jpg",
-            "jpeg",
-            "png",
-            "webp",
-            "gif"
-        ];
+        "png",
+
+        "webp",
+
+        "gif"
+
+    ];
 
 
     if (
-        !allowed.includes(
+        allowed.includes(
             extension
         )
     ) {
 
-        return "jpg";
+        return extension;
 
     }
 
 
-    return extension;
+    return "jpg";
 
 }
 
 
+
 /* =========================================================
-   18. NUMBER FORMAT
+   FORMAT NUMBER
 ========================================================= */
 
 function formatNumber(
     value
 ) {
+
 
     if (
         value === null ||
@@ -2900,13 +3332,15 @@ function formatNumber(
 }
 
 
+
 /* =========================================================
-   19. HTML ESCAPE
+   HTML ESCAPE
 ========================================================= */
 
 function escapeHtml(
     value
 ) {
+
 
     return String(value)
 
@@ -2938,13 +3372,15 @@ function escapeHtml(
 }
 
 
+
 /* =========================================================
-   20. SHOW CREATE ERROR
+   ERROR
 ========================================================= */
 
 function showCreateError(
     message
 ) {
+
 
     const box =
         document.getElementById(
@@ -2952,19 +3388,9 @@ function showCreateError(
         );
 
 
-    if (!box) {
-
-        alert(
-            message
-        );
-
-        return;
-
-    }
-
-
     box.textContent =
-        "⚠️ " + message;
+        "⚠️ " +
+        message;
 
 
     box.className =
@@ -2977,21 +3403,18 @@ function showCreateError(
 }
 
 
+
 /* =========================================================
-   21. HIDE CREATE ERROR
+   HIDE ERROR
 ========================================================= */
 
 function hideCreateError() {
+
 
     const box =
         document.getElementById(
             "createError"
         );
-
-
-    if (!box) {
-        return;
-    }
 
 
     box.textContent =
@@ -3008,10 +3431,8 @@ function hideCreateError() {
 }
 
 
-/* =========================================================
-   END
-========================================================= */
 </script>
+
 
 </body>
 </html>
